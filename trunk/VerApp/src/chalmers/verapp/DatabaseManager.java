@@ -22,7 +22,7 @@ public class DatabaseManager extends AsyncTask<Void,Void,Void>{
 		HttpClient httpclient = new DefaultHttpClient();
 		
 		// computer in school, local IP
-		HttpPost httppost = new HttpPost("http://129.16.21.10/verapp/dbManager.php");  
+		HttpPost httppost = new HttpPost("http://chalmersverateam.se/verapp/dbManager.php");  
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
 		try {
