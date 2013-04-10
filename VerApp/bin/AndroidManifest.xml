@@ -41,7 +41,7 @@
             android:label="@string/title_activity_run" >
         </activity>
         <activity
-            android:name="chalmers.verapp.BaseActivity"
+            android:name="chalmers.verapp.base.BaseActivity"
             android:label="@string/title_activity_base" >
         </activity>
     </application>

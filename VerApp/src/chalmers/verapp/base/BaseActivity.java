@@ -1,5 +1,8 @@
-package chalmers.verapp;
+package chalmers.verapp.base;
 
+import chalmers.verapp.R;
+import chalmers.verapp.R.layout;
+import chalmers.verapp.R.menu;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
