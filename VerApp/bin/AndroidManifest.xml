@@ -11,9 +11,9 @@
         android:targetSdkVersion="17" />
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.SCREEN_BRIGHT_WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -40,10 +40,10 @@
             android:name="chalmers.verapp.RunActivity"
             android:label="@string/title_activity_run" >
         </activity>
-
-        
+        <activity
+            android:name="chalmers.verapp.BaseActivity"
+            android:label="@string/title_activity_base" >
+        </activity>
     </application>
-    
-
 
 </manifest>
