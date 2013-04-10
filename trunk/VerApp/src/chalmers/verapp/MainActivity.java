@@ -1,5 +1,6 @@
 package chalmers.verapp;
 
+import chalmers.verapp.base.BaseActivity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.content.Intent;
@@ -48,8 +49,9 @@ public class MainActivity extends BaseActivity {
 		switch (item.getItemId()){
 
 		case R.id.menu_settings:
-			Intent i = new Intent(this, SettingsActivity.class);
-			startActivityForResult(i, RESULT_SETTINGS);
+			// Start settings 
+			// Intent i = new Intent(this, SettingsActivity.class);
+			// startActivityForResult(i, RESULT_SETTINGS);
 			break;
 
 		case R.id.menu_exit:
