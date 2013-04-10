@@ -1,12 +1,13 @@
 package chalmers.verapp;
 
 import java.math.*;
+
+import chalmers.verapp.base.BaseActivity;
 import chalmers.verapp.interfaces.Constants;
 import chalmers.verapp.interfaces.GPSCallback;
 import android.location.*;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.app.Activity;
+import android.os.SystemClock;s
 import android.content.pm.ActivityInfo;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +17,7 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
-public class RunActivity extends Activity implements GPSCallback{
+public class RunActivity extends BaseActivity implements GPSCallback{
 	private Button stopBtn, pauseBtn;
 	private Chronometer clockTime;	
 	private TextView tvSpeed;
