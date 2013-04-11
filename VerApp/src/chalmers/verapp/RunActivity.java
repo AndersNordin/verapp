@@ -7,8 +7,7 @@ import chalmers.verapp.interfaces.Constants;
 import chalmers.verapp.interfaces.GPSCallback;
 import android.location.*;
 import android.os.Bundle;
-import android.os.SystemClock;s
-import android.content.pm.ActivityInfo;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,21 +17,19 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
-	private Button stopBtn, pauseBtn;
+	private Button stopBtn, startWhenPauseBtn, incidentBtn;
 	private Chronometer clockTime;	
 	private TextView tvSpeed;
 	private GPSManager gpsManager = null;
 	private double speed = 0.0;
 	private int measurement_index = Constants.INDEX_KM;
 	private long timeWhenStopped = 0;
+	private boolean isTimeRunning = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
-
-		// Disable landscape mode
-		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -42,43 +39,49 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.setGPSCallback(this);
 
 		stopBtn = (Button)findViewById(R.id.stop);
-		pauseBtn = (Button)findViewById(R.id.pause);
+		startWhenPauseBtn = (Button)findViewById(R.id.start_when_paused);
+		incidentBtn = (Button)findViewById(R.id.incident);
 		clockTime = (Chronometer)findViewById(R.id.clockTime);
 		tvSpeed = (TextView)findViewById(R.id.tvSpeed);		
 
 		clockTime.start();
 
-		pauseBtn.setOnClickListener(new OnClickListener() {
+		startWhenPauseBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// Check whether pause or start mode on button				
-				if(timeWhenStopped > 0){
-					pauseBtn.setText(getResources().getString(R.string.pause_button));
+				if(!isTimeRunning){
+					// Check whether pause or start mode on button				
 					clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-					clockTime.start();
-					/* clockTime.setBase(SystemClock.elapsedRealtime());
-					timeWhenStopped = 0; */
-				}else{
-					
-					clockTime.stop();
+					clockTime.start();		
+					isTimeRunning = true;
 				}
 			}
 		});
-
+		
 		stopBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
-				clockTime.stop();
+				if(isTimeRunning){
+					timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
+					clockTime.stop();
+					isTimeRunning = false;
+				}
 			}
 		});
+		
+		incidentBtn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+			}
+		});
+		
+		
 	}
 
 	@Override
 	public void onGPSUpdate(Location location) 
 	{
-		Log.d("gps", "UPDATED");
-
 		String lat = "" + location.getLatitude();
 		String lon = "" + location.getLongitude();
 		speed = location.getSpeed();
@@ -113,7 +116,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		switch(unitIndex)
 		{
-		case Constants.INDEX_KM:		string = "km/h";	break;
+		case Constants.INDEX_KM:string = "km/h";	break;
 		case Constants.INDEX_MILES:	string = "mi/h";	break;
 		}
 

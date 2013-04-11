@@ -35,12 +35,22 @@
         android:text="@string/stop_button" />
 
     <Button
-        android:id="@+id/pause"
+        android:id="@+id/start_when_paused"
         android:layout_width="100dp"
         android:layout_height="75dp"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/clockTime"
         android:background="@drawable/blue_button"
-        android:text="@string/pause_button" />
+        android:text="@string/start_again_button" />
+
+    <Button
+        android:id="@+id/incident"
+        android:layout_width="100dp"
+        android:layout_height="75dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/blue_button"
+        android:text="@string/incident_button" />
 
 </RelativeLayout>
