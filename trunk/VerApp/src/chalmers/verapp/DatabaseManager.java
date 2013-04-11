@@ -21,7 +21,6 @@ public class DatabaseManager extends AsyncTask<Void,Void,Void>{
 		// Create a new HttpClient and Post HeaderO
 		HttpClient httpclient = new DefaultHttpClient();
 		
-		// computer in school, local IP
 		HttpPost httppost = new HttpPost("http://chalmersverateam.se/verapp/dbManager.php");  
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
