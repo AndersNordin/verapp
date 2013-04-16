@@ -4,22 +4,13 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/tvSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/clockTime"
-        android:layout_centerHorizontal="true"
-        android:text="@string/speed_init"
-        android:textColor="#000000"
-        android:textSize="50sp" />
-
     <Chronometer
         android:id="@+id/clockTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/stop"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="118dp"
         android:textColor="#000000"
         android:textSize="35sp" />
@@ -52,5 +43,28 @@
         android:layout_alignParentTop="true"
         android:background="@drawable/blue_button"
         android:text="@string/incident_button" />
+
+    <TextView
+        android:id="@+id/tvSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/clockTime"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="38dp"
+        android:text="@string/speed_init"
+        android:textColor="#000000"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/lapTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/clockTime"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/lapTime_init"
+        android:textColor="#000000"
+        android:textSize="35sp" />
 
 </RelativeLayout>

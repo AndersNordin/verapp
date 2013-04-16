@@ -12,15 +12,15 @@
     
     <!-- Buttons -->
     <string name="start_button">Start</string>
-    <string name="start_again_button">Start again</string>
+    <string name="start_again_button">Resume</string>
     <string name="stop_button">Stop</string>
-    <string name="incident_button">Incident</string>
-    
-    
+    <string name="incident_button">Incident</string>    
     
     <string name="title_activity_main">MainActivity</string>
     <string name="logo_desc">App logo</string>
+    
     <string name="speed_init">0.0 km/h</string>
+     <string name="lapTime_init">Lap Time: 0.0</string>
     
     <string name="title_activity_run">RunActivity</string>
     <string name="action_settings">Settings</string>
