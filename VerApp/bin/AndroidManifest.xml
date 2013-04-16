@@ -41,6 +41,12 @@
             android:name="chalmers.verapp.base.BaseActivity"
             android:label="@string/title_activity_base" >
         </activity>
+        
+        <activity
+            android:name="chalmers.verapp.settings.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        
     </application>
 
 </manifest>

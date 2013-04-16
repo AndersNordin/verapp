@@ -7,6 +7,8 @@
     <string name="menu_reset">Reset</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_exit">Exit</string>
+    <string name="title_frequency_logging">Frequency logging</string>
+    <string name="frequencyLog">Logging frequency</string>
     
     <!-- Buttons -->
     <string name="start_button">Start</string>
@@ -23,6 +25,17 @@
     <string name="title_activity_run">RunActivity</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_base">BaseActivity</string>
-
+    
+    <string name="pref_send_report">Send crash reports</string>
+    <string name="pref_send_report_summary">Helps to fix bugs</string>
+    <string name="pref_sync_frequency">Sync frequency</string>
+    <string name="pref_sync_frequency_summary">Set the sync frequency</string>
+    <string name="pref_user_name">Set username</string>
+    <string name="pref_user_name_summary">Set your username</string>
+     
+    <string name="pref_user_profile">User Profile</string>
+    <string name="pref_update_setting">Update Settings</string>
+    
+   <string name="title_activity_settings">SettingsActivity</string>
 
 </resources>
