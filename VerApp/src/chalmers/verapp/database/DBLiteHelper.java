@@ -8,6 +8,7 @@ import android.util.Log;
 public class DBLiteHelper extends SQLiteOpenHelper {
 	
 	private static final String TABLE_LOG_DATA = "Log_Data";
+	private static final String TABLE_SIGNALS = "Signals";
 	
 	 private static final String CREATE_TABLE_LOG_DATA = 
 			 "CREATE TABLE "+ TABLE_LOG_DATA +"(" +
@@ -17,7 +18,14 @@ public class DBLiteHelper extends SQLiteOpenHelper {
 			 "x_coordinate FLOAT," +
 			 "y_coordinate FLOAT," +
 			 "warning BOOLEAN," +
-			 "FOREIGN KEY(signalId) REFERENCES)";	 
+			 "FOREIGN KEY(signalId) REFERENCES)";
+	 
+	 private static final String CREATE_TABLE_SIGNALS = 
+			 "CREATE TABLE "+ TABLE_SIGNALS +"(" +
+			 "signalId integer primary key autoincrement," +
+			 "signalName TEXT," +
+			 "signalUnit TEXT)";
+	 
 
 	public DBLiteHelper(Context context) {
 		super(context, "verapp.db", null, 1);
@@ -26,6 +34,7 @@ public class DBLiteHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(CREATE_TABLE_LOG_DATA);		
+		db.execSQL(CREATE_TABLE_SIGNALS);	
 	}
 
 	@Override
