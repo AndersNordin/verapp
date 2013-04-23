@@ -14,7 +14,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class DatabaseManager extends AsyncTask<String, Void, Void>{
 

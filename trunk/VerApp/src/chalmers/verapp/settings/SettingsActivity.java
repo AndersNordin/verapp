@@ -1,9 +1,7 @@
 package chalmers.verapp.settings;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 public class SettingsActivity extends Activity {
 
