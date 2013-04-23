@@ -4,17 +4,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <Chronometer
-        android:id="@+id/clockTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/stop"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="118dp"
-        android:textColor="#000000"
-        android:textSize="35sp" />
-
     <Button
         android:id="@+id/stop"
         android:layout_width="100dp"
@@ -22,7 +11,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/blue_button"
+        android:background="@drawable/red_button"
         android:text="@string/stop_button" />
 
     <Button
@@ -31,7 +20,7 @@
         android:layout_height="75dp"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/clockTime"
-        android:background="@drawable/blue_button"
+        android:background="@drawable/green_button"
         android:text="@string/start_again_button" />
 
     <Button
@@ -41,29 +30,54 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="@drawable/blue_button"
+        android:background="@drawable/yellow_button"
         android:text="@string/incident_button" />
-
-    <TextView
-        android:id="@+id/tvSpeed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/clockTime"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="38dp"
-        android:text="@string/speed_init"
-        android:textColor="#000000"
-        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/lapTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/clockTime"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/lapTime_init"
+        android:layout_below="@+id/tvSpeed"
+        android:layout_centerHorizontal="true"
+        android:text="@string/latestlaps"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/lapTime2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lapTime3"
+        android:layout_below="@+id/lapTime"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/tvSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/incident"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:text="@string/speed_init"
+        android:textColor="#000000"
+        android:textSize="50sp" />
+
+    <TextView
+        android:id="@+id/lapTime3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lapTime2"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Chronometer
+        android:id="@+id/clockTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/stop"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
         android:textColor="#000000"
         android:textSize="35sp" />
 

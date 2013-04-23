@@ -20,7 +20,7 @@
     <string name="logo_desc">App logo</string>
     
     <string name="speed_init">0.0 km/h</string>
-     <string name="lapTime_init">Lap Time: 0.0</string>
+    <string name="latestlaps">Latest Lap Times</string>
     
     <string name="title_activity_run">RunActivity</string>
     <string name="action_settings">Settings</string>
