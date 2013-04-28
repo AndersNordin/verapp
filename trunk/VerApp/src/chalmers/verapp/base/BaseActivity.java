@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class BaseActivity extends Activity {
 
@@ -81,7 +82,8 @@ public class BaseActivity extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {  
-			frequency=data.getIntExtra("freq", 5000);       
+			frequency=data.getIntExtra("freq", 5000); 
+			Toast.makeText(getApplicationContext(), "Log Interval: " + (frequency/1000) + "s", Toast.LENGTH_SHORT).show();
 		}
 	}
 }
