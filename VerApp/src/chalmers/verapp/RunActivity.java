@@ -39,7 +39,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private boolean validLap = false;
 	private double totalDistance = 0;
 
-	Timer mTimer = new Timer();
+	private Timer mTimer = new Timer();
 	
 	// Location points	 
 	private Location startPos = new Location("start position"); // first point logged
@@ -72,7 +72,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
-
+	
 		// Pause button pushed
 		startWhenPauseBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -112,6 +112,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		clockTime.start();
 		Toast.makeText(getApplicationContext(), "Running", Toast.LENGTH_SHORT).show();
 
+
 		// Sending data with given frequency
 		mTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -120,12 +121,15 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					new DatabaseManager().execute("rpm", "2000", String.valueOf(13.37), String.valueOf(13.37), warning);
 				warning = "0"; // reset warning				
 			}
-		}, 0, 15000); // Insert freq. time from settings
+		}, 0, frequency); 
+		
+		
 	}
 	
 	// Step 4: Get current coordinate	
 	@Override
 	public void onGPSUpdate(Location currentPos){
+		tvLapTime2.setText("" + frequency);
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
 
 		// Step 1: Set starting coordinate

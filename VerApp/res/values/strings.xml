@@ -28,6 +28,7 @@
     <string name="nothingToDisplay">-</string>
 
     <!-- Settings -->
+    <string name="pref_freq">frequency</string>
     <string name="pref_send_report">Send crash reports</string>
     <string name="pref_send_report_summary">Helps to fix bugs</string>
     <string name="pref_sync_frequency">Sync frequency</string>
