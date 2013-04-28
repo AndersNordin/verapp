@@ -129,7 +129,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	// Step 4: Get current coordinate	
 	@Override
 	public void onGPSUpdate(Location currentPos){
-		tvLapTime2.setText("" + frequency);
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
 
 		// Step 1: Set starting coordinate
