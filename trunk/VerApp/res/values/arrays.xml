@@ -6,6 +6,7 @@
         <item name="5">5 sek</item>
         <item name="10">10 sek</item>
     </string-array>
+    
     <string-array name="logFrequency">
         <item name="1">1</item>
         <item name="2">2</item>

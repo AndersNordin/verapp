@@ -14,17 +14,15 @@ import android.view.MenuItem;
 
 public class BaseActivity extends Activity {
 
-
-
-	private static final int RESULT_SETTINGS = 1;
+	final static int RESULT_SETTINGS = 1;
+	protected int frequency = 5000; 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		// Disable landscape mode
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-	}
+	}	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -48,12 +46,9 @@ public class BaseActivity extends Activity {
 			}
 		};
 
-
 		switch (item.getItemId()){
 		case R.id.menu_settings:
-			// Start settings 
-			Intent i = new Intent(BaseActivity.this, SettingsActivity.class);
-			startActivityForResult(i, RESULT_SETTINGS);
+			startActivityForResult(new Intent(BaseActivity.this, SettingsActivity.class), RESULT_SETTINGS);
 			break;
 
 		case R.id.menu_exit:
@@ -66,32 +61,27 @@ public class BaseActivity extends Activity {
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {		
-		super.onActivityResult(requestCode, resultCode, data);
-		switch (requestCode) {
-		case RESULT_SETTINGS:
-			SettingsActivity.choseFreq();
-			break;
-		}
-	}
-
-	@Override
 	public void onBackPressed (){
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				switch (which){
 				case DialogInterface.BUTTON_POSITIVE:
-					finish();
+					BaseActivity.super.onBackPressed();
 					break;
 				}
 			}
 		};		
-
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to go back?").setPositiveButton("Yes", dialogClickListener)
-		.setNegativeButton("No", dialogClickListener).show();
-
+		.setNegativeButton("No", dialogClickListener).show();	
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == RESULT_SETTINGS && resultCode == RESULT_OK) {  
+			frequency=data.getIntExtra("freq", 5000);       
+		}
+	}
 }

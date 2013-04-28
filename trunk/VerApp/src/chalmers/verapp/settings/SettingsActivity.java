@@ -1,22 +1,28 @@
 package chalmers.verapp.settings;
 
-import android.app.Activity;
+import chalmers.verapp.base.BaseActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 
-public class SettingsActivity extends Activity {
-
+public class SettingsActivity extends BaseActivity implements OnPreferenceChangeListener{
+	
+	int freq;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		getFragmentManager().beginTransaction()
-		.replace(android.R.id.content, new SettingsFragment()).commit();
+		super.onCreate(savedInstanceState);				
+		getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();	
+	}	
 
-	}
-
-	public static void choseFreq() {
-		//SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-		//setLogFreq(sharedPrefs.getString("frequency", "NULL"));	//Inte bra att funktionen har string som parameter, ska vara int! Skapa metoden setLogFreq där frekvensvariabeln används.Det här behöver även skrivas om lite grann. Kanske ha någon form av case sats för att settings ska kunna utökas senare.  
-
-	}
-
+    @Override
+    public boolean onPreferenceChange(Preference preference, Object newValue) {  
+    	Intent returnIntent = new Intent();
+    	freq = Integer.valueOf(newValue.toString()) * 1000; 
+    	returnIntent.putExtra("freq",freq);
+    	setResult(RESULT_OK,returnIntent);     
+    	finish();
+    	return true;
+    }  
 }
