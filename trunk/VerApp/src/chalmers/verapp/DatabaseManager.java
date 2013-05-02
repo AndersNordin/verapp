@@ -57,12 +57,5 @@ public class DatabaseManager extends AsyncTask<String, Void, Boolean>{
 		success = true;
 
 		return success;
-	}	
-
-	@Override
-	protected void onPostExecute(Boolean result) {
-		if (result)
-			Log.i("ASYNC SENDING SUCCESS", "" + result);
-
 	}
 }
