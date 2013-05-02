@@ -28,7 +28,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private Chronometer clockTime;	
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
 
-	
+
 	private Timer mTimer = new Timer();
 	// GPS
 	private GPSManager gpsManager = null;
@@ -41,12 +41,10 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private boolean validLap = false;
 	private double totalDistance = 0;
 	private double totalTime = 0;
-	
+
 	// Location points	 
-	private Location startPos = new Location("start position"); // first point logged
 	private double bearingStart = 999.0; // Cars initial direction
-	private Location secondLatestPos = new Location("Second latest point");
-	private Location _currentPos;
+	private Location _currentPos, secondLatestPos, startPos;
 
 	// Representing the complete finish line
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
@@ -77,7 +75,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
-	
+
 		// Pause button pushed
 		startWhenPauseBtn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -118,31 +116,32 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		Toast.makeText(getApplicationContext(), "Running", Toast.LENGTH_SHORT).show();		
 
 		runThread();
+		runDistanceThread();
 	}
-	
+
 	private void runThread() {
-	    new Thread() {
-	        public void run() {
-	            while (true) {
-	                try {
-	                    runOnUiThread(new Runnable() {
-	                        @Override
-	                        public void run() {
-	                        	if(isTimeRunning)
-									 new DatabaseManager().execute("rpm", "2000", String.valueOf(13.37), String.valueOf(13.37), warning);						
+		new Thread() {
+			public void run() {
+				while (true) {
+					try {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if(isTimeRunning)
+									new DatabaseManager().execute("rpm", "2000", String.valueOf(13.37), String.valueOf(13.37), warning);						
 								warning = "0"; // reset warning				
-	                        }
-	                    });
-	                    Thread.sleep(frequency);
-	                } catch (InterruptedException e) {
-	                    e.printStackTrace();
-	                }
-	            }
-	        }
-	    }.start();
+							}
+						});
+						Thread.sleep(frequency);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}.start();
 	}
-	
-	
+
+
 	@Override
 	/**
 	 * When GPS Coordinate is updated this function is triggered
@@ -151,14 +150,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	public void onGPSUpdate(Location currentPos){		
 		// Accessed in timer
 		_currentPos = currentPos;
-		
+
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
 
 		// Step 1: Set starting coordinate
-		if(startPos.getLatitude() == 0 && startPos.getLongitude() == 0)
+		if(startPos == null)
 			startPos = currentPos;
 
-		// Step 2: Set starting bearing	
+		/*// Step 2: Set starting bearing	
 		// Step 3: Calculate finish line	
 		if(currentPos.hasBearing() && bearingStart == 999.0){
 			bearingStart = currentPos.getBearing();			
@@ -170,12 +169,12 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		double dist = 999.0;
 
 		// The car doesn't necessarily has to have the same angel when crossing the finish line 
-		if(bearingStart+20 > currentPos.getBearing() && currentPos.getBearing() > bearingStart-20 ){
+		if(bearingStart+20 > currentPos.getBearing() && currentPos.bearingTo(startPos) > bearingStart-20 ){
 			inter1 = intersection(finishLinePointOne, (bearingStart-90), currentPos, (currentPos.getBearing()));
 			inter2 = intersection(finishLinePointOne , (bearingStart+90), currentPos, (currentPos.getBearing()));
 			inter3 = intersection(finishLinePointTwo , (bearingStart-90), currentPos, (currentPos.getBearing()));
 			inter4 = intersection(finishLinePointTwo , (bearingStart+90), currentPos, (currentPos.getBearing()));
-			
+
 			Log.i("Possible Intersection", "Has it really crossed the finishLine?");
 		}	
 
@@ -183,14 +182,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		if((inter2 &&  inter3) || (inter1  && inter4)){
 			dist = currentPos.distanceTo(startPos);
 			Log.i("The distance is:", "" + dist);
-		}
-
+		} */
 
 		// Ensure that the car is not passing finishLine twice on the same lap	
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(5000); // CHANGE TO 300000
+					Thread.sleep(15000); // CHANGE TO 300000
 					validLap = true;
 				}catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -200,9 +198,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		// Step 7: Validate that the intersection was correct, which means within 10 meters
 		// Step 8: Set timer to lock lap++;
-		if((dist < 10) && validLap){
+		if((currentPos.distanceTo(startPos) < 5) && validLap){
 			Log.i("NEW LAP", "LAP++");
-			
+
 			Long timeInMilliSec = (SystemClock.elapsedRealtime() - clockTime.getBase()); // in ms
 
 			int size = lapTimes.size();
@@ -234,7 +232,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		double currentSpeed = currentPos.getSpeed();
 		String speedString = "" + roundDecimal(convertToKMH(currentSpeed),2);
 		this.tvSpeed.setText(speedString + " km/h");
-		
+
 		// Display average speed
 		String avgSpeedString = "" + roundDecimal(convertToKMH(totalDistance/((double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000)), 2);
 
@@ -244,21 +242,32 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		else
 			avgSpeed.setTextColor(Color.RED);
 
-		avgSpeed.setText("Avg Speed: " + avgSpeedString + " km/h");				
-	
-		
-		// Calculate the average speed each second
-		mTimer.scheduleAtFixedRate(new TimerTask() {
-			@Override
-			public void run(){				
-				if(secondLatestPos.getLongitude() != 0 && secondLatestPos.getLatitude() != 0 && _currentPos.hasSpeed()){
-					totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
-					totalTime = (double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000; // in second
-					Log.i("TOTAL DISTANCE", "" + totalDistance);
-				}		
-				secondLatestPos = _currentPos;			
+		avgSpeed.setText("Avg Speed: " + avgSpeedString + " km/h");		
+
+		if(secondLatestPos == null)
+			secondLatestPos = _currentPos;
+	}
+
+	private void runDistanceThread() {
+		new Thread() {
+			public void run() {
+				while (true) {
+					try {
+						if(_currentPos != null && secondLatestPos != null){
+							if(secondLatestPos.getLongitude() != 0 && secondLatestPos.getLatitude() != 0 && _currentPos.hasSpeed()){
+								totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
+								totalTime = (double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000; // in second
+								Log.i("TOTAL DISTANCE", "" + totalDistance);
+							}	
+							secondLatestPos = _currentPos;
+							Thread.sleep(2000);
+						}
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 			}
-		}, 0, 1000);		
+		}.start();
 	}
 
 	@Override
@@ -271,17 +280,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.setGPSCallback(null);
 		gpsManager = null;
 		super.onDestroy();
-	}
-	
-	@Override
-	protected void onPause(){
-		super.onPause();
-		timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
-	}
-	
-	@Override
-	protected void onResume(){
-		
 	}
 
 	/**
@@ -417,28 +415,4 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		return (result != null);
 	}
-
-	/**
-	 * Distance between two points
-	 * @param start, starting point
-	 * @param destination, destination point
-	 * @return the distance between in meters
-	 */
-	/*
-	public double distanceTo(Location start, Location destination){
-		double lat1 = Math.toRadians(start.getLatitude());
-		double lon1 = Math.toRadians(start.getLongitude());
-		double lat2 = Math.toRadians(destination.getLatitude());
-		double lon2 = Math.toRadians(destination.getLongitude());
-		double dLat = lat2 - lat1;
-		double dLon = lon2 - lon1;
-
-		double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-				Math.cos(lat1) * Math.cos(lat2) * 
-				Math.sin(dLon/2) * Math.sin(dLon/2);
-		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-		double d = 6371 * c;
-
-		return d * 1000;
-	} */
 }
