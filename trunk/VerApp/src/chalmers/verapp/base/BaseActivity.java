@@ -1,5 +1,6 @@
 package chalmers.verapp.base;
 
+import chalmers.verapp.DatabaseManager;
 import chalmers.verapp.MainActivity;
 import chalmers.verapp.R;
 import chalmers.verapp.settings.SettingsActivity;
@@ -16,8 +17,8 @@ import android.widget.Toast;
 public class BaseActivity extends Activity {
 
 	final static int RESULT_SETTINGS = 1;
-	protected int frequency = 5000; 
-
+	protected int frequency = 5000; // in ms
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
