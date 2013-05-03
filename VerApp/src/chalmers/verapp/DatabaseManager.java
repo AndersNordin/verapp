@@ -34,7 +34,9 @@ public class DatabaseManager extends AsyncTask<String, Void, Boolean>{
 		// Create a new HttpClient and Post Header
 		HttpClient httpclient = new DefaultHttpClient();
 
+
 		HttpPost httppost = new HttpPost("http://chalmersverateam.se/XMLData.php");  
+
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
 		try {

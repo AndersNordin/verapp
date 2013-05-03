@@ -19,6 +19,7 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 import chalmers.verapp.base.BaseActivity;
+import chalmers.verapp.ecu_connection.EcuManager;
 import chalmers.verapp.interfaces.Constants;
 import chalmers.verapp.interfaces.GPSCallback;
 
@@ -49,6 +50,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	// Representing the complete finish line
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
 	private Location finishLinePointOne = new Location("Finish Line Point to the right");
+
 
 	@Override
 	/**
@@ -119,6 +121,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		runDistanceThread();
 	}
 
+
 	private void runThread() {
 		new Thread() {
 			public void run() {
@@ -137,8 +140,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 						e.printStackTrace();
 					}
 				}
-			}
-		}.start();
+			}		
+		}.start();		
 	}
 
 
