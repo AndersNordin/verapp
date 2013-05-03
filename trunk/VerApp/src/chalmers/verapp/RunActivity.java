@@ -3,9 +3,6 @@ package chalmers.verapp;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -29,8 +26,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private Chronometer clockTime;	
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
 
-
-	private Timer mTimer = new Timer();
 	// GPS
 	private GPSManager gpsManager = null;
 
@@ -41,10 +36,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private ArrayList<Long> lapTimes = new ArrayList<Long>();
 	private boolean validLap = false;
 	private double totalDistance = 0;
-	private double totalTime = 0;
 
 	// Location points	 
-	private double bearingStart = 999.0; // Cars initial direction
 	private Location _currentPos, secondLatestPos, startPos;
 
 	// Representing the complete finish line
@@ -122,6 +115,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	}
 
 
+	/**
+	 * A fix for Ice Cream Sandwhich and lower. Start load class in UI Thread
+	 */
 	private void runThread() {
 		new Thread() {
 			public void run() {
@@ -169,10 +165,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		// There are 4 cases
 		boolean inter1 = false,inter2 = false, inter3 = false, inter4 = false;
-		double dist = 999.0;
 
 		// The car doesn't necessarily has to have the same angel when crossing the finish line 
-		if(bearingStart+20 > currentPos.getBearing() && currentPos.bearingTo(startPos) > bearingStart-20 ){
+		if(startPos.getBearing()+20 > currentPos.getBearing() && currentPos.bearingTo(startPos) > startPos.getBearing()-20 ){
 			inter1 = intersection(finishLinePointOne, (bearingStart-90), currentPos, (currentPos.getBearing()));
 			inter2 = intersection(finishLinePointOne , (bearingStart+90), currentPos, (currentPos.getBearing()));
 			inter3 = intersection(finishLinePointTwo , (bearingStart-90), currentPos, (currentPos.getBearing()));
@@ -183,8 +178,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		// Step 6: If so... lap++;
 		if((inter2 &&  inter3) || (inter1  && inter4)){
-			dist = currentPos.distanceTo(startPos);
-			Log.i("The distance is:", "" + dist);
+			Log.i("The distance is:", "" + currentPos.distanceTo(startPos));
 		} */
 
 		// Ensure that the car is not passing finishLine twice on the same lap	
@@ -250,7 +244,10 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		if(secondLatestPos == null)
 			secondLatestPos = _currentPos;
 	}
-
+	
+	/**
+	 * Run a thread for calculating distance to calculate lap time
+	 */
 	private void runDistanceThread() {
 		new Thread() {
 			public void run() {
@@ -259,7 +256,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 						if(_currentPos != null && secondLatestPos != null){
 							if(secondLatestPos.getLongitude() != 0 && secondLatestPos.getLatitude() != 0 && _currentPos.hasSpeed()){
 								totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
-								totalTime = (double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000; // in second
 								Log.i("TOTAL DISTANCE", "" + totalDistance);
 							}	
 							secondLatestPos = _currentPos;

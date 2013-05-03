@@ -1,6 +1,5 @@
 package chalmers.verapp.base;
 
-import chalmers.verapp.DatabaseManager;
 import chalmers.verapp.MainActivity;
 import chalmers.verapp.R;
 import chalmers.verapp.settings.SettingsActivity;
@@ -49,17 +48,24 @@ public class BaseActivity extends Activity {
 		};
 
 		switch (item.getItemId()){
+		case R.id.menu_reset:
+			Intent intent = new Intent(BaseActivity.this, MainActivity.class);
+			startActivity(intent);	
+			return true;
 		case R.id.menu_settings:
 			startActivityForResult(new Intent(BaseActivity.this, SettingsActivity.class), RESULT_SETTINGS);
-			break;
+			return true;
 
 		case R.id.menu_exit:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", dialogClickListener)
 			.setNegativeButton("No", dialogClickListener).show();
-			break;
-		} 
-		return true;    	
+			return true;
+			
+		default:
+			Toast.makeText(getApplicationContext(), "Nothing To Display", Toast.LENGTH_SHORT).show();
+			return true;
+		}  	
 	}
 
 	@Override
