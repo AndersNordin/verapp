@@ -15,8 +15,6 @@ import android.widget.Button;
 import chalmers.verapp.base.BaseActivity;
 
 public class MainActivity extends BaseActivity{
-	private boolean gpsEnable = false;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -28,22 +26,11 @@ public class MainActivity extends BaseActivity{
 		OnClickListener listener = new OnClickListener(){
 			@Override
 			public void onClick(View v){			
-				if(gpsEnable){
 					Intent intent = new Intent(MainActivity.this, RunActivity.class);
-					startActivity(intent);	
-				}	
+					startActivity(intent);				
 			}			
 		};
 
-		GpsStatus.Listener myGPSListener = new GpsStatus.Listener() {
-			public void onGpsStatusChanged(int event) {						
-				if (event == GpsStatus.GPS_EVENT_STARTED){							
-					gpsEnable = true;
-				}else{
-					gpsEnable = false;
-				}				
-			}
-		};	
 
 		// Identify start button
 		Button btn = (Button) findViewById(R.id.start);
@@ -82,8 +69,6 @@ public class MainActivity extends BaseActivity{
 				}
 			});
 			builder.create().show();
-		}else{
-			gpsEnable = true;
 		}
 	}
 }
