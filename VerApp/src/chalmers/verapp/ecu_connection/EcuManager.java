@@ -6,17 +6,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import android.hardware.usb.UsbManager;
 import android.util.Log;
-import android.widget.EditText;
-
 import chalmers.verapp.SystemInfo;
-
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
-
 
 public class EcuManager {
 	private UsbSerialDriver mSerialDevice;
