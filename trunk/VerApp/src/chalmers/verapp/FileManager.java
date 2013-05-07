@@ -30,8 +30,6 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 	public static final File FILE_HISTORY = new File(FILE_HISTORY_DIR, "file_history.txt");
 
 	private File[] listOfFiles;
-	
-
 	/**
 	 * List all files present in the folder
 	 */
@@ -53,18 +51,19 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 					addToFileHistory(listOfFiles[i].getName());
 					Log.i("SENDING ", listOfFiles[i].getName());
 					try {
-						HttpClient httpclient = new DefaultHttpClient();
-
-						HttpPost httppost = new HttpPost(URL);
+						 HttpClient httpClient = new DefaultHttpClient();						
+						 HttpPost httpPost = new HttpPost(URL);
 
 						InputStreamEntity reqEntity = new InputStreamEntity(
 								new FileInputStream(listOfFiles[i]), -1);
 
 
 						reqEntity.setContentType("binary/octet-stream");
+						
+						
 						reqEntity.setChunked(true); // Send in multiple parts if needed
-						httppost.setEntity(reqEntity);
-						HttpResponse response = httpclient.execute(httppost);
+						httpPost.setEntity(reqEntity);
+						HttpResponse response = httpClient.execute(httpPost);
 						//Do something with response...
 					} catch (Exception e) {
 						e.printStackTrace();
