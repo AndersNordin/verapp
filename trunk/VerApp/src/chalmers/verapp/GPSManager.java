@@ -23,48 +23,35 @@ public class GPSManager
 	
 	public GPSManager()
 	{	
-		GPSManager.locationListener = new LocationListener()
-		{
+		GPSManager.locationListener = new LocationListener(){
 			@Override
-			public void onLocationChanged(final Location location)
-			{
-				if (GPSManager.gpsCallback != null)
-				{
+			public void onLocationChanged(final Location location){
+				if (GPSManager.gpsCallback != null){
 					GPSManager.gpsCallback.onGPSUpdate(location);
 				}
 			}
 			
 			@Override
-			public void onProviderDisabled(final String provider)
-			{
-			}
+			public void onProviderDisabled(final String provider){}
 			
 			@Override
-			public void onProviderEnabled(final String provider)
-			{
-			}
+			public void onProviderEnabled(final String provider){}
 			
 			@Override
-			public void onStatusChanged(final String provider, final int status, final Bundle extras)
-			{
-			}
+			public void onStatusChanged(final String provider, final int status, final Bundle extras){}
 		};
 	}
 	
-	public GPSCallback getGPSCallback()
-	{
+	public GPSCallback getGPSCallback(){
 		return GPSManager.gpsCallback;
 	}
 	
-	public void setGPSCallback(final GPSCallback gpsCallback)
-	{
+	public void setGPSCallback(final GPSCallback gpsCallback){
 		GPSManager.gpsCallback = gpsCallback;
 	}
 	
-	public void startListening(final Context context)
-	{
-		if (GPSManager.locationManager == null)
-		{
+	public void startListening(final Context context){
+		if (GPSManager.locationManager == null)	{
 			GPSManager.locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		}
 		
@@ -79,36 +66,29 @@ public class GPSManager
 		
 		final String bestProvider = GPSManager.locationManager.getBestProvider(criteria, true);
 		
-		if (bestProvider != null && bestProvider.length() > 0)
-		{
+		if (bestProvider != null && bestProvider.length() > 0){
 			GPSManager.locationManager.requestLocationUpdates(bestProvider, GPSManager.gpsMinTime,
 					GPSManager.gpsMinDistance, GPSManager.locationListener);
 		}
-		else
-		{
+		else{
 			final List<String> providers = GPSManager.locationManager.getProviders(true);
 			
-			for (final String provider : providers)
-			{
+			for (final String provider : providers){
 				GPSManager.locationManager.requestLocationUpdates(provider, GPSManager.gpsMinTime,
 						GPSManager.gpsMinDistance, GPSManager.locationListener);
 			}
 		}
 	}
 	
-	public void stopListening()
-	{
-		try
-		{
-			if (GPSManager.locationManager != null && GPSManager.locationListener != null)
-			{
+	public void stopListening(){
+		try{
+			if (GPSManager.locationManager != null && GPSManager.locationListener != null){
 				GPSManager.locationManager.removeUpdates(GPSManager.locationListener);
 			}
 			
 			GPSManager.locationManager = null;
 		}
-		catch (final Exception ex)
-		{
+		catch (final Exception ex){
 			
 		}
 	}

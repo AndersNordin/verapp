@@ -16,8 +16,6 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 import android.widget.Toast;
 import chalmers.verapp.base.BaseActivity;
-import chalmers.verapp.ecu_connection.EcuManager;
-import chalmers.verapp.interfaces.Constants;
 import chalmers.verapp.interfaces.GPSCallback;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
@@ -26,8 +24,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private Chronometer clockTime;	
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
 
-	// GPS
-	private GPSManager gpsManager = null;
+	private GPSManager gpsManager = null; // GPS
 
 	// Values 
 	private long timeWhenStopped = 0;
@@ -39,16 +36,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 	// Location points	 
 	private Location _currentPos, secondLatestPos, startPos;
-
+	
 	// Representing the complete finish line
+	/* Not working 
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
-	private Location finishLinePointOne = new Location("Finish Line Point to the right");
-
+	private Location finishLinePointOne = new Location("Finish Line Point to the right");*/
 
 	@Override
-	/**
-	 * When starting Run Activity
-	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
@@ -102,7 +96,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		incidentBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				warning = "1";
+				warning = "1";			
 				Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -110,15 +104,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		clockTime.start();
 		Toast.makeText(getApplicationContext(), "Running", Toast.LENGTH_SHORT).show();		
 
-		runThread();
+		runLoggingThread();
 		runDistanceThread();
 	}
-
 
 	/**
 	 * A fix for Ice Cream Sandwhich and lower. Start load class in UI Thread
 	 */
-	private void runThread() {
+	private void runLoggingThread(){
 		new Thread() {
 			public void run() {
 				while (true) {
@@ -127,8 +120,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 							@Override
 							public void run() {
 								if(isTimeRunning)
-									new DatabaseManager().execute("rpm", "2000", String.valueOf(13.37), String.valueOf(13.37), warning);						
-								warning = "0"; // reset warning				
+									// Send files
+									new FileManager().execute(); 
+									warning = "0"; // reset warning				
 							}
 						});
 						Thread.sleep(frequency);
@@ -140,14 +134,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		}.start();		
 	}
 
-
 	@Override
 	/**
 	 * When GPS Coordinate is updated this function is triggered
 	 * with the latest coordinate
 	 */
 	public void onGPSUpdate(Location currentPos){		
-		// Accessed in timer
+		// Accessed in runDistanceThread()
 		_currentPos = currentPos;
 
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
@@ -185,7 +178,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					Thread.sleep(15000); // CHANGE TO 300000
+					Thread.sleep(300000); 
 					validLap = true;
 				}catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -195,7 +188,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		// Step 7: Validate that the intersection was correct, which means within 10 meters
 		// Step 8: Set timer to lock lap++;
-		if((currentPos.distanceTo(startPos) < 5) && validLap){
+		if((currentPos.distanceTo(startPos) < 10) && validLap){
 			Log.i("NEW LAP", "LAP++");
 
 			Long timeInMilliSec = (SystemClock.elapsedRealtime() - clockTime.getBase()); // in ms
@@ -244,7 +237,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		if(secondLatestPos == null)
 			secondLatestPos = _currentPos;
 	}
-	
+
 	/**
 	 * Run a thread for calculating distance to calculate lap time
 	 */
@@ -278,6 +271,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.stopListening();
 		gpsManager.setGPSCallback(null);
 		gpsManager = null;
+
 		super.onDestroy();
 	}
 
@@ -304,13 +298,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		return value;
 	}
-
+	
 	/**
 	 * Takes start location and sets two perpendicular points 
 	 * according to the start point. +/- 90 degrees
 	 * @param p1, initial starting point
 	 * @param bearing1, initial direction
 	 */
+	/* NOT NECESSARY 
 	public void setPerpendicularLine(Location p1, double bearing1){		
 		double bearing2 = bearing1 - 90;
 		bearing1 = bearing1 + 90;
@@ -348,7 +343,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		finishLinePointOne.setLatitude(x3);
 		finishLinePointOne.setLongitude(y3);
 	}
-
+	*/	
+	
 	/**
 	 * Checks if a line is intersecting with another
 	 * See http://williams.best.vwh.net/avform.htm#Intersection
@@ -358,6 +354,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * @param brng2, destination direction
 	 * @return true if they are intersection, otherwise false
 	 */
+	/* NOT NECESSARY 
 	public boolean intersection(Location f1,double brng1, Location c1, double brng2){
 		double lat1 = Math.toRadians(f1.getLatitude());
 		double lon1 = Math.toRadians(f1.getLongitude());
@@ -413,5 +410,5 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		result.setLongitude(Math.toDegrees(Math.toDegrees(lon3)));
 
 		return (result != null);
-	}
+	}	*/
 }

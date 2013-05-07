@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -21,8 +22,7 @@ public class FileLogger implements ILogger {
 	
 	
 	public FileLogger(){
-		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );
-		
+		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );		
 	}
 
 	@Override
@@ -38,6 +38,8 @@ public class FileLogger implements ILogger {
 		try {
 			String timeStamp = DateFormat.getDateInstance().format(new Date());
 			mOutputPath = mBackupPath.getPath()+ "/datalog " + timeStamp +"fileNr-"+fileNr +".txt";
+			
+			
 		
 			mOutputFile = new BufferedOutputStream(new FileOutputStream(mOutputPath,true));
 		} catch (FileNotFoundException e) {
@@ -77,6 +79,7 @@ public class FileLogger implements ILogger {
 		}
 
 	}
+
 
 
 }

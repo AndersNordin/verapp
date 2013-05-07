@@ -9,6 +9,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -18,11 +19,15 @@ public class BaseActivity extends Activity {
 	final static int RESULT_SETTINGS = 1;
 	protected int frequency = 5000; // in ms
 	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Disable landscape mode
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		
 	}	
 
 	@Override
@@ -39,9 +44,9 @@ public class BaseActivity extends Activity {
 				case DialogInterface.BUTTON_POSITIVE:
 					Intent intent = new Intent(BaseActivity.this, MainActivity.class);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra("Exit me", true);
+					intent.putExtra("Exit me", true);					
 					startActivity(intent);
-					finish();
+					System.exit(0);  // Kill all active threads
 					break;
 				}
 			}
