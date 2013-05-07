@@ -2,6 +2,7 @@ package chalmers.verapp;
 
 import java.io.BufferedReader;
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,18 +22,19 @@ import android.os.Environment;
 import android.util.Log;
 
 public class FileManager extends AsyncTask<Void, Void, Void>{
-	private static final String URL = "http://www.chalmersverateam.se/zipParser.php"; 
+	private static final String URL = "www.chalmersverateam.se/zipParser.php"; 
 
 	public static final File FILE_HISTORY_DIR = new File(Environment.getExternalStorageDirectory() +
 			"/Android/data/com.chalmers.civinco/files/history/");	
 	public static final File FILE_LOGS_DIR = new File(Environment.getExternalStorageDirectory() +
 			"/Android/data/com.chalmers.civinco/files/");
 	public static final File FILE_HISTORY = new File(FILE_HISTORY_DIR, "file_history.txt");
-
 	private File[] listOfFiles;
+	
 	/**
 	 * List all files present in the folder
 	 */
+	@Override
 	protected void onPreExecute() {
 		if(!FILE_HISTORY_DIR.exists())
 			FILE_HISTORY_DIR.mkdirs();
@@ -45,10 +47,14 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 		HashMap<String, String> sentFiles = readFromFile();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
-				String extension = getExtension(listOfFiles[i]);
-				
-				if(sentFiles.get(listOfFiles[i].getName()) == null && extension.equals("zip")){
-					addToFileHistory(listOfFiles[i].getName());
+			
+				// Exclude directories
+				String extension = "NOT ZIP";
+				if(listOfFiles[i].isFile())
+					extension = getExtension(listOfFiles[i]);
+
+			if(sentFiles.get(listOfFiles[i].getName()) == null && extension.equals("zip") ){
+					// addToFileHistory(listOfFiles[i].getName());
 					Log.i("SENDING ", listOfFiles[i].getName());
 					try {
 						 HttpClient httpClient = new DefaultHttpClient();						
@@ -57,18 +63,14 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 						InputStreamEntity reqEntity = new InputStreamEntity(
 								new FileInputStream(listOfFiles[i]), -1);
 
-
-						reqEntity.setContentType("binary/octet-stream");
-						
-						
+						reqEntity.setContentType("binary/octet-stream");					
 						reqEntity.setChunked(true); // Send in multiple parts if needed
 						httpPost.setEntity(reqEntity);
 						HttpResponse response = httpClient.execute(httpPost);
-						//Do something with response...
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				}			
+				}		
 		} 
 		return null;
 	}	
