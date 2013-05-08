@@ -54,9 +54,9 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 					extension = getExtension(listOfFiles[i]);
 
 			if(sentFiles.get(listOfFiles[i].getName()) == null && extension.equals("zip") ){
-					// addToFileHistory(listOfFiles[i].getName());
+					addToFileHistory(listOfFiles[i].getName());
 					Log.i("SENDING ", listOfFiles[i].getName());
-					try {
+					/*try {
 						 HttpClient httpClient = new DefaultHttpClient();						
 						 HttpPost httpPost = new HttpPost(URL);
 
@@ -69,7 +69,7 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 						HttpResponse response = httpClient.execute(httpPost);
 					} catch (Exception e) {
 						e.printStackTrace();
-					}
+					}*/
 				}		
 		} 
 		return null;

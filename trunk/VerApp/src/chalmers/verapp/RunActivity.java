@@ -20,7 +20,6 @@ import chalmers.verapp.interfaces.GPSCallback;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
 	// Graphical
-	private Button stopBtn, startWhenPauseBtn, incidentBtn;
 	private Chronometer clockTime;	
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
 
@@ -57,57 +56,43 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.setGPSCallback(this);
 
 		// Get graphical id's
-		stopBtn = (Button)findViewById(R.id.stop);
-		startWhenPauseBtn = (Button)findViewById(R.id.start_when_paused);
-		incidentBtn = (Button)findViewById(R.id.incident);
 		clockTime = (Chronometer)findViewById(R.id.clockTime);
 		tvSpeed = (TextView)findViewById(R.id.tvSpeed);
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
 
-		// Pause button pushed
-		startWhenPauseBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(!isTimeRunning){
-					// Check whether pause or start mode on button				
-					clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
-					clockTime.start();		
-					isTimeRunning = true;
-					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-
-		// Stop button pushed
-		stopBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(isTimeRunning){
-					timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
-					clockTime.stop();
-					isTimeRunning = false;
-					Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
-
-		// Incident button pushed
-		incidentBtn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				warning = "1";			
-				Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
-			}
-		});
-
 		clockTime.start();
 		Toast.makeText(getApplicationContext(), "Running", Toast.LENGTH_SHORT).show();		
 
 		runLoggingThread();
-		runDistanceThread();
-		
+		runDistanceThread();		
+	}
+	
+	public void ButtonOnClick(View v) {
+	    switch(v.getId()){
+	    case R.id.stop:
+	    	if(isTimeRunning){
+				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
+				clockTime.stop();
+				isTimeRunning = false;
+				Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
+			}	        
+	        break;
+	    case R.id.incident:
+			warning = "1";			
+			Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
+	        break;
+	    case R.id.start_when_paused:
+	    	if(!isTimeRunning){
+				// Check whether pause or start mode on button				
+				clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
+				clockTime.start();		
+				isTimeRunning = true;
+				Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
+			}
+	    	break;
+	    }
 	}
 
 	/**
@@ -275,6 +260,12 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager = null;
 
 		super.onDestroy();
+	}
+	
+	protected void onPause(){
+		
+		
+		super.onPause();
 	}
 
 	/**
