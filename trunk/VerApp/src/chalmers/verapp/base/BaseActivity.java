@@ -6,9 +6,11 @@ import chalmers.verapp.settings.SettingsActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.hardware.usb.UsbManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +20,7 @@ public class BaseActivity extends Activity {
 
 	final static int RESULT_SETTINGS = 1;
 	protected int frequency = 5000; // in ms
-	
+	protected UsbManager mUsbManager;
 	
 	
 	@Override
@@ -27,7 +29,7 @@ public class BaseActivity extends Activity {
 		// Disable landscape mode
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
-		
+		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 	}	
 
 	@Override
