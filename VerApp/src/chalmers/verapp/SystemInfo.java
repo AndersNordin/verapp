@@ -1,5 +1,7 @@
 package chalmers.verapp;
 
+import android.content.SyncResult;
+
 public class SystemInfo {
 
 	/* Lägg till Longitude, Latitude, varning och om det är något mer 
@@ -10,40 +12,61 @@ public class SystemInfo {
 	 * Obs! trådsäkra..
 	 */
 	
-	public String longitude;
-	public String latitude;
-	public String warning;
+	private String mLongitude;
+	private String mLatitude;
+	private String mWarning;
 	
-
+	private Object mLongitudeLock = new Object();
+	private Object mLatitudeLock = new Object();
+	private Object mWarningLock = new Object();
+	
 	public SystemInfo(){
-		this.longitude = "";
-		this.latitude = "";
-		this.warning = "";
+		this.mLongitude = "";
+		this.mLatitude = "";
+		this.mWarning = "";
 	}
 	
 	
-	public synchronized String getLatitude() {
-		return latitude;
+	public String getLatitude() {
+		synchronized(mLatitudeLock)
+		{
+			return mLatitude;
+		}
 	}
 
-	public synchronized void setLatitude(String latitude) {
-		this.latitude = latitude;
+	public void setLatitude(String latitude) {
+		synchronized(mLatitudeLock)
+		{
+			this.mLatitude = latitude;
+		}
 	}
 
-	public synchronized String getWarning() {
-		return warning;
+	public String getWarning() {
+		synchronized(mWarningLock)
+		{
+			return mWarning;
+		}
 	}
 
-	public synchronized void setWarning(String warning) {
-		this.warning = warning;
+	public void setWarning(String warning) {
+		synchronized(mWarningLock)
+		{
+			this.mWarning = warning;
+		}
 	}
 
-	public synchronized String getLongitude() {
-		return longitude;
+	public String getLongitude() {
+		synchronized(mLongitudeLock)
+		{
+			return mLongitude;
+		}
 	}
 
-	public synchronized void setLongitude(String longitude) {
-		this.longitude = longitude;
+	public void setLongitude(String longitude) {
+		synchronized(mLongitudeLock)
+		{
+			this.mLongitude = longitude;
+		}
 	}
 	
 	

@@ -6,6 +6,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import android.app.Activity;
 import android.hardware.usb.UsbManager;
 import android.util.Log;
 import chalmers.verapp.SystemInfo;
@@ -13,7 +14,7 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
-public class EcuManager {
+public class EcuManager extends Activity {
 	private UsbSerialDriver mSerialDevice;
 	private UsbManager mUsbManager;
 	private BlockingQueue<String> mSendQueue;
@@ -49,8 +50,8 @@ public class EcuManager {
 
 	
 	
-	public EcuManager(SystemInfo sysinfo){
-		mSystemInfo = sysinfo;
+	public EcuManager(){
+		//mSystemInfo = sysinfo;
 		mSendQueue = new ArrayBlockingQueue<String>(64);
 		mReadQueue = new ArrayBlockingQueue<Byte>(2048);
 		mLogger = new FileLogger();
