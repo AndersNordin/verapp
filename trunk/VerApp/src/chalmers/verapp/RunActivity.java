@@ -42,6 +42,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
 	private Location finishLinePointOne = new Location("Finish Line Point to the right");*/
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -106,6 +107,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		runLoggingThread();
 		runDistanceThread();
+		
 	}
 
 	/**

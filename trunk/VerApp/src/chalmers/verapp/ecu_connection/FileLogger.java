@@ -22,7 +22,9 @@ public class FileLogger implements ILogger {
 	
 	
 	public FileLogger(){
+
 		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );		
+
 	}
 
 	@Override
