@@ -11,8 +11,9 @@
     <string name="frequencyLog">Logging frequency</string>
 
     <!-- Buttons -->
-    <string name="start_button">Start</string>
-    <string name="start_again_button">Resume</string>
+    <string name="launch_button">Launch</string>
+    <string name="start">Start</string>
+    <string name="resume">Resume</string>
     <string name="stop_button">Stop</string>
     <string name="incident_button">Incident</string>
 

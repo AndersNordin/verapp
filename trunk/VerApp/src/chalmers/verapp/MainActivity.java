@@ -30,10 +30,9 @@ public class MainActivity extends BaseActivity{
 					startActivity(intent);				
 			}			
 		};
-
-
+		
 		// Identify start button
-		Button btn = (Button) findViewById(R.id.start);
+		Button btn = (Button) findViewById(R.id.launch);
 		// Connect listener and button
 		btn.setOnClickListener(listener);
 
