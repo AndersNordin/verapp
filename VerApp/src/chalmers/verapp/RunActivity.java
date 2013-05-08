@@ -3,22 +3,32 @@ package chalmers.verapp;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+
+import android.content.Context;
 import android.graphics.Color;
+import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.style.SuperscriptSpan;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import chalmers.verapp.base.BaseActivity;
+import chalmers.verapp.ecu_connection.EcuManagerTest;
 import chalmers.verapp.interfaces.GPSCallback;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
+
 	// Graphical
 	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
@@ -33,6 +43,16 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private boolean validLap = false;
 	private double totalDistance = 0;
 
+	// EcuManager
+	private EditText etInputCommand;
+	private UsbSerialDriver mSerialDevice;
+	//private UsbManager mUsbManager;
+	private EcuManagerTest mEcuManger;
+
+	// Systeminfo 
+	private SystemInfo mSysteminfo;
+
+
 	// Location points	 
 	private Location _currentPos, secondLatestPos, startPos;
 
@@ -46,9 +66,19 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
-
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+		//Start EcuManager
+		etInputCommand = (EditText) findViewById(R.id.etInputCommand);
+		//mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+
+
+
+		//Systeminfo
+		mSysteminfo = new SystemInfo();
+
+
 
 		// Initiate GPS
 		gpsManager = new GPSManager();
@@ -60,6 +90,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
+
+
+
 
 		tvSpeed.setText("Searching for GPS signal");
 
@@ -74,7 +107,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
 				clockTime.stop();
 				timeIsRunning = false;
-				
+
 				Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
 			}	        
 			break;
@@ -96,9 +129,19 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 				else
 					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
 			}
+
+		case R.id.bStartEcuManager:
+			mSerialDevice = UsbSerialProber.acquire(mUsbManager);
+			mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice);
+			mEcuManger.Send(etInputCommand.getText().toString());
+			clockTime.start();
+			runLoggingThread();
+			runDistanceThread();
 			break;
 		}
 	}
+
+
 
 	/**
 	 * A fix for Ice Cream Sandwhich and lower. Start load class in UI Thread
@@ -132,7 +175,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 */
 	public void onGPSUpdate(Location currentPos){	
 		if(timeIsRunning)
-		_currentPos = currentPos;
+			_currentPos = currentPos;
 
 		if(clockTime == null){
 			clockTime = (Chronometer)findViewById(R.id.clockTime);
@@ -272,6 +315,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager = null;
 
 		super.onDestroy();
+	}
+	//@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+		mEcuManger.Shutdown();
+
+		finish();
 	}
 
 	/**

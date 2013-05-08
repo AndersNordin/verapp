@@ -14,6 +14,7 @@
         android:onClick="ButtonOnClick"
         android:background="@drawable/red_button"
         android:text="@string/stop_button" />
+    
 
     <Button
         android:id="@+id/incident"
@@ -95,5 +96,25 @@
         android:background="@drawable/green_button"
         android:layout_marginBottom="16dp"
         android:text="@string/start" />
+
+    <Button
+        android:id="@+id/bStartEcuManager"
+        android:layout_width="100dp"
+        android:layout_height="75dp"
+        android:layout_alignTop="@+id/stop"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/red_button"
+        android:text="Start Ecu Manager" />
+
+    <EditText
+        android:id="@+id/etInputCommand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/incident"
+        android:layout_centerHorizontal="true"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
 
 </RelativeLayout>

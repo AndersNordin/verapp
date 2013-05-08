@@ -1,10 +1,10 @@
 package chalmers.verapp.ecu_connection;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -13,7 +13,7 @@ import android.os.Environment;
 
 public class FileLogger implements ILogger {
 
-	private final int MaxCount = 4096;
+	private final int MaxCount = 1048576;
 	private File mBackupPath = null;
 	private BufferedOutputStream mOutputFile = null;
 	private int mCurrentCount = 0;
@@ -22,9 +22,8 @@ public class FileLogger implements ILogger {
 	
 	
 	public FileLogger(){
-
-		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );		
-
+		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );
+		
 	}
 
 	@Override
@@ -40,8 +39,6 @@ public class FileLogger implements ILogger {
 		try {
 			String timeStamp = DateFormat.getDateInstance().format(new Date());
 			mOutputPath = mBackupPath.getPath()+ "/datalog " + timeStamp +"fileNr-"+fileNr +".txt";
-			
-			
 		
 			mOutputFile = new BufferedOutputStream(new FileOutputStream(mOutputPath,true));
 		} catch (FileNotFoundException e) {
@@ -55,6 +52,8 @@ public class FileLogger implements ILogger {
 		try {
 			mOutputFile.flush();
 			mOutputFile.close();
+			ZipUtility zipUtility = new ZipUtility(mOutputPath, mOutputPath + ".zip", true);
+			zipUtility.Zip();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,6 +63,8 @@ public class FileLogger implements ILogger {
 	@Override
 	public void WriteLine(String text) {
 		try {
+			//mOutputFile.write("apa".getBytes());
+			
 			mCurrentCount += text.length();
 			mOutputFile.write(text.getBytes());
 			
@@ -74,14 +75,13 @@ public class FileLogger implements ILogger {
 				zipUtility.Zip();
 				Open();
 			}
-			
+			mOutputFile.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-
 
 
 }
