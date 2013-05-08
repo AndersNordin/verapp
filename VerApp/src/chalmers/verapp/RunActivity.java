@@ -20,14 +20,14 @@ import chalmers.verapp.interfaces.GPSCallback;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
 	// Graphical
-	private Chronometer clockTime;	
+	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
 
 	private GPSManager gpsManager = null; // GPS
 
 	// Values 
 	private long timeWhenStopped = 0;
-	private boolean isTimeRunning = true;
+	private boolean timeIsRunning = false;
 	private String warning = "0";
 	private ArrayList<Long> lapTimes = new ArrayList<Long>();
 	private boolean validLap = false;
@@ -35,7 +35,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 	// Location points	 
 	private Location _currentPos, secondLatestPos, startPos;
-	
+
 	// Representing the complete finish line
 	/* Not working 
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
@@ -56,43 +56,48 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.setGPSCallback(this);
 
 		// Get graphical id's
-		clockTime = (Chronometer)findViewById(R.id.clockTime);
 		tvSpeed = (TextView)findViewById(R.id.tvSpeed);
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
 
-		clockTime.start();
-		Toast.makeText(getApplicationContext(), "Running", Toast.LENGTH_SHORT).show();		
+		tvSpeed.setText("Searching for GPS signal");
 
 		runLoggingThread();
 		runDistanceThread();		
 	}
-	
+
 	public void ButtonOnClick(View v) {
-	    switch(v.getId()){
-	    case R.id.stop:
-	    	if(isTimeRunning){
+		switch(v.getId()){
+		case R.id.stop:
+			if(timeIsRunning){
 				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
 				clockTime.stop();
-				isTimeRunning = false;
+				timeIsRunning = false;
+				
 				Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
 			}	        
-	        break;
-	    case R.id.incident:
+			break;
+		case R.id.incident:
 			warning = "1";			
 			Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
-	        break;
-	    case R.id.start_when_paused:
-	    	if(!isTimeRunning){
+			break;
+		case R.id.start:
+			if(!timeIsRunning){
 				// Check whether pause or start mode on button				
 				clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
 				clockTime.start();		
-				isTimeRunning = true;
-				Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
+				timeIsRunning = true;
+
+				if(timeWhenStopped == 0){
+					Toast.makeText(getApplicationContext(), "Started", Toast.LENGTH_SHORT).show();
+					((Button)findViewById(R.id.start)).setText("Resume");
+				}
+				else
+					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
 			}
-	    	break;
-	    }
+			break;
+		}
 	}
 
 	/**
@@ -106,10 +111,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								if(isTimeRunning)
-									// Send files
-									new FileManager().execute(); 
-									warning = "0"; // reset warning				
+								if(timeIsRunning)									
+									new FileManager().execute(); // Send files
+								warning = "0"; // reset warning				
 							}
 						});
 						Thread.sleep(frequency);
@@ -126,9 +130,15 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * When GPS Coordinate is updated this function is triggered
 	 * with the latest coordinate
 	 */
-	public void onGPSUpdate(Location currentPos){		
-		// Accessed in runDistanceThread()
+	public void onGPSUpdate(Location currentPos){	
+		if(timeIsRunning)
 		_currentPos = currentPos;
+
+		if(clockTime == null){
+			clockTime = (Chronometer)findViewById(R.id.clockTime);
+			tvSpeed.setText("GPS signal OK");
+			((Button)findViewById(R.id.start)).setEnabled(true);
+		}
 
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
 
@@ -206,9 +216,11 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		}
 
 		// Display speed
-		double currentSpeed = currentPos.getSpeed();
-		String speedString = "" + roundDecimal(convertToKMH(currentSpeed),2);
-		this.tvSpeed.setText(speedString + " km/h");
+		if(timeIsRunning){
+			double currentSpeed = currentPos.getSpeed();
+			String speedString = "" + roundDecimal(convertToKMH(currentSpeed),2);
+			this.tvSpeed.setText(speedString + " km/h");
+		}
 
 		// Display average speed
 		String avgSpeedString = "" + roundDecimal(convertToKMH(totalDistance/((double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000)), 2);
@@ -221,7 +233,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		avgSpeed.setText("Avg Speed: " + avgSpeedString + " km/h");		
 
-		if(secondLatestPos == null)
+		if(secondLatestPos == null && timeIsRunning)
 			secondLatestPos = _currentPos;
 	}
 
@@ -233,7 +245,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			public void run() {
 				while (true) {
 					try {
-						if(_currentPos != null && secondLatestPos != null){
+						if(_currentPos != null && secondLatestPos != null && timeIsRunning){
 							if(secondLatestPos.getLongitude() != 0 && secondLatestPos.getLatitude() != 0 && _currentPos.hasSpeed()){
 								totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
 								Log.i("TOTAL DISTANCE", "" + totalDistance);
@@ -261,12 +273,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		super.onDestroy();
 	}
-	
-	protected void onPause(){
-		
-		
-		super.onPause();
-	}
 
 	/**
 	 * Converts speed from meter per second to kilometer per hour
@@ -291,7 +297,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		return value;
 	}
-	
+
 	/**
 	 * Takes start location and sets two perpendicular points 
 	 * according to the start point. +/- 90 degrees
@@ -336,8 +342,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		finishLinePointOne.setLatitude(x3);
 		finishLinePointOne.setLongitude(y3);
 	}
-	*/	
-	
+	 */	
+
 	/**
 	 * Checks if a line is intersecting with another
 	 * See http://williams.best.vwh.net/avform.htm#Intersection
