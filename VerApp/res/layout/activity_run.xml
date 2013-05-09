@@ -12,6 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="16dp"
         android:onClick="ButtonOnClick"
+        android:enabled="false"
         android:background="@drawable/red_button"
         android:text="@string/stop_button" />
     

@@ -24,6 +24,7 @@ import chalmers.verapp.interfaces.GPSCallback;
 public class RunActivity extends BaseActivity implements GPSCallback{
 	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
+	private Button stop, start, incident;
 	private Thread distThread, logThread, newLapThread;
 	private GPSManager gpsManager = null;
 
@@ -76,6 +77,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
+		stop = ((Button)findViewById(R.id.stop));
+		start = ((Button)findViewById(R.id.start));
 		
 		tvSpeed.setText("Searching for GPS signal");
 
@@ -92,7 +95,10 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
 				clockTime.stop();
 				timeIsRunning = false;
-
+				stop.setEnabled(false);
+				start.setEnabled(true);
+			
+				
 				Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
 			}	        
 			break;
@@ -101,15 +107,16 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.start:
-			if(!timeIsRunning){
-				// Check whether pause or start mode on button				
+			if(!timeIsRunning){						
 				clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
 				clockTime.start();		
 				timeIsRunning = true;
-
+				stop.setEnabled(true);
+				start.setEnabled(false);
+			
 				if(timeWhenStopped == 0){
 					Toast.makeText(getApplicationContext(), "Started", Toast.LENGTH_SHORT).show();
-					((Button)findViewById(R.id.start)).setText("Resume");
+					start.setText("Resume");
 				}
 				else
 					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
@@ -313,7 +320,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	public void onBackPressed() {
 		super.onBackPressed();
 		mEcuManger.Shutdown();
-		// shutdown();		
+		shutdown();		
 	}
 	
 	private void closeDistThread(){
