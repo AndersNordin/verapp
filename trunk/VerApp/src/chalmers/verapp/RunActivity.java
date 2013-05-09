@@ -3,20 +3,14 @@ package chalmers.verapp;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-
-import android.content.Context;
 import android.graphics.Color;
-import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.style.SuperscriptSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -28,44 +22,40 @@ import chalmers.verapp.ecu_connection.EcuManagerTest;
 import chalmers.verapp.interfaces.GPSCallback;
 
 public class RunActivity extends BaseActivity implements GPSCallback{
-
-	// Graphical
 	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
-
-	private GPSManager gpsManager = null; // GPS
+	private Thread distThread, logThread, newLapThread;
+	private GPSManager gpsManager = null;
 
 	// Values 
 	private long timeWhenStopped = 0;
 	private boolean timeIsRunning = false;
-	private String warning = "0";
 	private ArrayList<Long> lapTimes = new ArrayList<Long>();
 	private boolean validLap = false;
 	private double totalDistance = 0;
-
+	
 	// EcuManager
 	private EditText etInputCommand;
 	private UsbSerialDriver mSerialDevice;
 	//private UsbManager mUsbManager;
 	private EcuManagerTest mEcuManger;
-
-	// Systeminfo 
 	private SystemInfo mSysteminfo;
-
 
 	// Location points	 
 	private Location _currentPos, secondLatestPos, startPos;
 
 	// Representing the complete finish line
-	/* Not working 
+	/*
 	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
-	private Location finishLinePointOne = new Location("Finish Line Point to the right");*/
+	private Location finishLinePointOne = new Location("Finish Line Point to the right");
+	*/
 
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
+		
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -73,12 +63,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		etInputCommand = (EditText) findViewById(R.id.etInputCommand);
 		//mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
-
-
 		//Systeminfo
 		mSysteminfo = new SystemInfo();
-
-
 
 		// Initiate GPS
 		gpsManager = new GPSManager();
@@ -90,14 +76,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		tvLapTime1 = (TextView)findViewById(R.id.lapTime2);
 		tvLapTime2 = (TextView)findViewById(R.id.lapTime3);
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
-
-
-
-
+		
 		tvSpeed.setText("Searching for GPS signal");
 
 		runLoggingThread();
-		runDistanceThread();		
+		runDistanceThread();	
+		
+		
 	}
 
 	public void ButtonOnClick(View v) {
@@ -112,7 +97,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			}	        
 			break;
 		case R.id.incident:
-			warning = "1";			
+			mSysteminfo.setWarning("1");
 			Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.start:
@@ -141,13 +126,12 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		}
 	}
 
-
-
 	/**
 	 * A fix for Ice Cream Sandwhich and lower. Start load class in UI Thread
 	 */
-	private void runLoggingThread(){
-		new Thread() {
+	private void runLoggingThread(){		
+		logThread = new Thread() {
+			@Override
 			public void run() {
 				while (true) {
 					try {
@@ -156,7 +140,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 							public void run() {
 								if(timeIsRunning)									
 									new FileManager().execute(); // Send files
-								warning = "0"; // reset warning				
+								mSysteminfo.setWarning("0");			
 							}
 						});
 						Thread.sleep(frequency);
@@ -165,7 +149,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					}
 				}
 			}		
-		}.start();		
+		};
+		logThread.start();		
 	}
 
 	@Override
@@ -174,13 +159,17 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * with the latest coordinate
 	 */
 	public void onGPSUpdate(Location currentPos){	
-		if(timeIsRunning)
+		if(timeIsRunning){
 			_currentPos = currentPos;
+			mSysteminfo.setLatitude(""+currentPos.getLatitude());
+			mSysteminfo.setLatitude(""+currentPos.getLongitude());
+		}
 
 		if(clockTime == null){
 			clockTime = (Chronometer)findViewById(R.id.clockTime);
 			tvSpeed.setText("GPS signal OK");
 			((Button)findViewById(R.id.start)).setEnabled(true);
+			mSysteminfo.setWarning("0");
 		}
 
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
@@ -215,7 +204,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		} */
 
 		// Ensure that the car is not passing finishLine twice on the same lap	
-		new Thread(new Runnable() {
+		newLapThread = new Thread() {
 			public void run() {
 				try {
 					Thread.sleep(300000); 
@@ -224,7 +213,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					throw new RuntimeException(e);
 				}
 			}
-		}).start();		
+		};
+		
+		newLapThread.start();		
 
 		// Step 7: Validate that the intersection was correct, which means within 10 meters
 		// Step 8: Set timer to lock lap++;
@@ -284,7 +275,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * Run a thread for calculating distance to calculate lap time
 	 */
 	private void runDistanceThread() {
-		new Thread() {
+		distThread = new Thread() {
 			public void run() {
 				while (true) {
 					try {
@@ -301,7 +292,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					}
 				}
 			}
-		}.start();
+		};		
+		distThread.start();
 	}
 
 	@Override
@@ -316,13 +308,45 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		super.onDestroy();
 	}
-	//@Override
+	
+	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		super.onBackPressed();
 		mEcuManger.Shutdown();
-
-		finish();
+		// shutdown();		
+	}
+	
+	private void closeDistThread(){
+		distThread.interrupt();
+		try {
+			distThread.join(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void closeNewLapThread(){
+		logThread.interrupt();
+		try {
+			logThread.join(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void closeLogThread(){
+		distThread.interrupt();
+		try {
+			distThread.join(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void shutdown(){
+		closeDistThread();
+		closeLogThread();
+		closeNewLapThread();
 	}
 
 	/**
