@@ -1,7 +1,5 @@
 package chalmers.verapp;
 
-import android.content.SyncResult;
-
 public class SystemInfo {
 
 	/* Lägg till Longitude, Latitude, varning och om det är något mer 

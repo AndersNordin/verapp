@@ -59,11 +59,7 @@ public class EcuManagerTest {
 		mSendQueue = new ArrayBlockingQueue<String>(64);
 		mReadQueue = new ArrayBlockingQueue<Byte>(2048);
 		mLogger = new FileLogger();
-		mLogger.Open();
-
-        
-
-				
+		mLogger.Open();			
 		//mSendQueue.add("bL0002");
 				
 //		mSerialDevice = UsbSerialProber.acquire(mUsbManager);
@@ -89,9 +85,7 @@ public class EcuManagerTest {
                 return;
             }
             //mTitleTextView.setText("Serial device: " + mSerialDevice);
-        }
-        
-        
+        }   
         
         
         startIoManager();
@@ -103,10 +97,7 @@ public class EcuManagerTest {
         //stopWriteThread();
         //startIoManager();
        // startReadThread();
-       // startWriteThread();
-		
-		
-		
+       // startWriteThread();	
 	}
 	
 	private void startWriteThread(){
@@ -227,7 +218,6 @@ public class EcuManagerTest {
 			try {
 				mReadQueue.put(data[i]);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				mLogger.WriteLine("UpdateReceivedData interrupted");
 
 			}
@@ -239,7 +229,6 @@ public class EcuManagerTest {
 		try {
 			mSendQueue.put("bL0002");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			mLogger.WriteLine("EcuManagerTest::Send() caught exception " + e.toString());
 		}
 	}

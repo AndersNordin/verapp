@@ -45,6 +45,7 @@
         android:layout_alignLeft="@+id/tvSpeed"
         android:layout_below="@+id/tvSpeed"
         android:text="@string/avgSpeed_init"
+        android:layout_centerHorizontal="true"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Chronometer
@@ -114,7 +115,7 @@
         android:layout_centerHorizontal="true"
         android:ems="10" >
 
-        <requestFocus />
+        <requestFocus/>
     </EditText>
 
 </RelativeLayout>
