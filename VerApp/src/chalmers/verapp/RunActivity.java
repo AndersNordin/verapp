@@ -145,7 +145,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								if(timeIsRunning)									
+								// if(timeIsRunning)									
 									new FileManager().execute(); // Send files
 								mSysteminfo.setWarning("0");			
 							}

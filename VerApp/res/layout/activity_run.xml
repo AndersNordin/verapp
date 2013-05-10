@@ -43,7 +43,6 @@
         android:id="@+id/avgSpeed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tvSpeed"
         android:layout_below="@+id/tvSpeed"
         android:text="@string/avgSpeed_init"
         android:layout_centerHorizontal="true"
@@ -103,12 +102,14 @@
         android:id="@+id/bStartEcuManager"
         android:layout_width="100dp"
         android:layout_height="75dp"
+        android:visibility="invisible"
         android:layout_alignTop="@+id/stop"
         android:layout_centerHorizontal="true"
         android:background="@drawable/red_button"
         android:text="Start Ecu Manager" />
 
     <EditText
+         android:visibility="invisible"
         android:id="@+id/etInputCommand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
