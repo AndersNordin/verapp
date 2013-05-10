@@ -39,6 +39,7 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 		listOfFiles = FILE_LOGS_DIR.listFiles();
 	}
 
+	// http://stackoverflow.com/questions/7943620/error-while-trying-to-upload-file-from-android
 	@Override
 	protected Void doInBackground(Void...voids){	
 		HashMap<String, String> sentFiles = readFromFile();
