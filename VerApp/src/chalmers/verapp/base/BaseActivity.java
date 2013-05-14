@@ -19,7 +19,7 @@ public class BaseActivity extends Activity {
 
 	final static int RESULT_SETTINGS = 1;
 	protected int frequency = 5000; // in ms
-	protected UsbManager mUsbManager;
+	
 	
 	
 	@Override
@@ -28,7 +28,7 @@ public class BaseActivity extends Activity {
 		// Disable landscape mode
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		
-		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		//mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 	}	
 
 	@Override
