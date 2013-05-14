@@ -13,7 +13,7 @@ import android.os.Environment;
 
 public class FileLogger implements ILogger {
 
-	private final int MaxCount = 1048576;
+	private final int MaxCount = 10240;
 	private File mBackupPath = null;
 	private BufferedOutputStream mOutputFile = null;
 	private int mCurrentCount = 0;
@@ -61,9 +61,11 @@ public class FileLogger implements ILogger {
 	}
 
 	@Override
-	public void WriteLine(String text) {
+	public synchronized void WriteLine(String text) {
 		try {
-			//mOutputFile.write("apa".getBytes());
+			text = text.replaceAll(","," ");
+			text = text.replace("[","");
+			text = text.replace("]","");
 			
 			mCurrentCount += text.length();
 			mOutputFile.write(text.getBytes());

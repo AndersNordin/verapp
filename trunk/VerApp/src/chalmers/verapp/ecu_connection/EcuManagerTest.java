@@ -1,7 +1,9 @@
 package chalmers.verapp.ecu_connection;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +11,8 @@ import java.util.concurrent.Executors;
 
 import android.hardware.usb.UsbManager;
 import android.util.Log;
+
+import chalmers.verapp.SystemInfo;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
@@ -24,6 +28,7 @@ public class EcuManagerTest {
 	private Thread mWriteThread;
 	private Thread mReadThread;
 	private ILogger mLogger;
+	private SystemInfo mSystemInfo;
 	public Thread mEcuManagerThread;
 	
 	private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
@@ -53,9 +58,10 @@ public class EcuManagerTest {
 	};
 	
 	
-	public EcuManagerTest(UsbManager manager, UsbSerialDriver usbSerial ){
+	public EcuManagerTest(UsbManager manager, UsbSerialDriver usbSerial, SystemInfo sysinfo ){
 		mUsbManager = manager;
 		mSerialDevice = usbSerial;
+		mSystemInfo = sysinfo;
 		mSendQueue = new ArrayBlockingQueue<String>(64);
 		mReadQueue = new ArrayBlockingQueue<Byte>(2048);
 		mLogger = new FileLogger();
@@ -63,7 +69,9 @@ public class EcuManagerTest {
 		//mSendQueue.add("bL0002");
 				
 //		mSerialDevice = UsbSerialProber.acquire(mUsbManager);
-        Log.d("", "Resumed, mSerialDevice=" + mSerialDevice);
+		if (mUsbManager == null) {
+        	mLogger.WriteLine("mUsbManager == null");
+        }
         if (mSerialDevice == null) {
         	mLogger.WriteLine("mSerialDevice == null");
             //mTitleTextView.setText("No serial device.");
@@ -104,11 +112,10 @@ public class EcuManagerTest {
 		//mSendQueue.add("bL0002");
 		mWriteThread = new Thread() {
 			public void run() {
-				mLogger.WriteLine("Before try run in startWriteThread!");
 				try {
-					
+					while (!this.isInterrupted()) {
 						mLogger.WriteLine("Inne startWrite thread");
-						String message = "bL0002";
+						String message = mSendQueue.take();
 						char buffer[] = message.toCharArray();
 						boolean error = false;
 						for (int i = 0; i < buffer.length; i++)
@@ -130,7 +137,9 @@ public class EcuManagerTest {
 						{
 							mLogger.WriteLine("WriteThread wrote: " + message);
 						}
-					
+					}
+				} catch (InterruptedException e){
+					Thread.currentThread().interrupt();
 				} catch (Exception e) {
 					mLogger.WriteLine("Exception caught in WriteThread: " + e.toString());
 				}
@@ -138,23 +147,91 @@ public class EcuManagerTest {
 		};
 		mWriteThread.start();
 	}
+	
+	
+//	private void startWriteThread(){
+//		//mSendQueue.add("bL0002");
+//		mWriteThread = new Thread() {
+//			public void run() {
+//				mLogger.WriteLine("Before try run in startWriteThread!");
+//				try {
+//					
+//						mLogger.WriteLine("Inne startWrite thread");
+//						String message = "bL0002";
+//						char buffer[] = message.toCharArray();
+//						boolean error = false;
+//						for (int i = 0; i < buffer.length; i++)
+//						{
+//							if (mSerialDevice.write(
+//									new byte[] { (byte) buffer[i] }, 200) > 0)
+//							{
+//								// Log success
+//								
+//							} else {
+//								error = true;
+//							}
+//						}
+//						if(error)
+//						{
+//							mLogger.WriteLine("WriteThread failed to write: " + message);
+//						}
+//						else
+//						{
+//							mLogger.WriteLine("WriteThread wrote: " + message);
+//						}
+//					
+//				} catch (Exception e) {
+//					mLogger.WriteLine("Exception caught in WriteThread: " + e.toString() + e.toString());
+//				}
+//			}
+//		};
+//		mWriteThread.start();
+//	}
 
-	private void startReadThread(){
+private void startReadThread(){
+		
 		mReadThread = new Thread() {
 			public void run() {
 				try {
 					mLogger.WriteLine("Started Read Thread\n");
 					ArrayList<Byte> message = new ArrayList<Byte>();
+					ArrayList<Integer> shortMsg = new ArrayList<Integer>();
 					byte lastByte = 0x00;
+					
+					
 					while (!this.isInterrupted()) {
 						
 						byte buffer = mReadQueue.take();
+						
 						message.add(buffer);
+						
 						if (lastByte == 0x44 && buffer == 0x53) {
-							//if(message.size()==11){
-							mLogger.WriteLine(message.toString() + "\n");
-							//message.clear();
-							//}
+							
+							if(message.size()==105){
+								message.remove(0);
+								message.remove(0);
+								message.remove(0);
+								message.remove(message.size()-1);
+								message.remove(message.size()-1);
+								message.remove(message.size()-1);
+								message.remove(message.size()-1);
+								
+								while(message.size()>0){
+									byte firstByte = message.remove(0);
+									byte secondByte = message.remove(0);
+									short temp1 = (short) firstByte;
+									short temp2 = (short) secondByte;
+									int val = (int) ((temp1 << 8) | (temp2 & 0xFF));
+									if(val<0){
+										val = 6553+val+1; 
+									}
+									shortMsg.add(val);
+								}
+								
+								mLogger.WriteLine(" " +shortMsg.toString() +" sWheelSpeed," +
+										"sG-force sChain sCamber sSteering "+" "+mSystemInfo.getWarning()+" "+mSystemInfo.getLongitude()+" "+mSystemInfo.getLatitude() + "\n");
+								}
+							shortMsg.clear();
 							message.clear();
 						}
 						lastByte = buffer;
@@ -166,11 +243,40 @@ public class EcuManagerTest {
 				}
 			}
 		};
-		mReadThread.start();
-		startWriteThread();
-		
+		mReadThread.start();		
 	}
+//	private void startReadThread(){
+//		mReadThread = new Thread() {
+//			public void run() {
+//				try {
+//					mLogger.WriteLine("Started Read Thread\n");
+//					ArrayList<Byte> message = new ArrayList<Byte>();
+//					byte lastByte = 0x00;
+//					while (!this.isInterrupted()) {
+//						
+//						byte buffer = mReadQueue.take();
+//						message.add(buffer);
+//						if (lastByte == 0x44 && buffer == 0x53) {
+//							
+//							mLogger.WriteLine(mSystemInfo.getLongitude() + " " + mSystemInfo.getLatitude() + " " + message.toString() + "\n");
+//							message.clear();
+//						}
+//						lastByte = buffer;
+//					}
+//				} catch (Exception e) {
+//					Thread.currentThread().interrupt();
+//					mLogger.WriteLine("Exception in readtread: "
+//							+ e.getMessage() + e.toString());
+//				}
+//			}
+//		};
+//		mReadThread.start();
+//
+//	}
 
+
+	
+	
 	private void stopWriteThread() {
 		mWriteThread.interrupt();
 		try {
@@ -183,7 +289,7 @@ public class EcuManagerTest {
 	private void stopReadThread() {
 		mReadThread.interrupt();
 		try {
-			mWriteThread.join(2000);
+			mReadThread.join(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -227,7 +333,7 @@ public class EcuManagerTest {
 	public void Send(String msg)
 	{
 		try {
-			mSendQueue.put("bL0002");
+			mSendQueue.put(msg);
 		} catch (Exception e) {
 			mLogger.WriteLine("EcuManagerTest::Send() caught exception " + e.toString());
 		}
@@ -235,6 +341,7 @@ public class EcuManagerTest {
 	
 	public void Shutdown()
 	{
+		mLogger.WriteLine("EcuManagerTest Shutdown()");
 		try {
 			mSendQueue.put("v");
 			Thread.sleep(200);

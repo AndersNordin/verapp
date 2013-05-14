@@ -7,21 +7,20 @@ public class SystemInfo {
 	 * Datan från sensorerna kommer också in här och in i zippen...
 	 * -Jag hämtar datan här och lägger in i zippen.
 	 * 
-	 * Obs! trådsäkra..
 	 */
 	
-	private String mLongitude;
-	private String mLatitude;
-	private String mWarning;
+	private String mLongitude = "";
+	private String mLatitude = "";
+	private String mWarning = "";
 	
 	private Object mLongitudeLock = new Object();
 	private Object mLatitudeLock = new Object();
 	private Object mWarningLock = new Object();
 	
 	public SystemInfo(){
-		this.mLongitude = "";
-		this.mLatitude = "";
-		this.mWarning = "";
+		this.mLongitude = "42.1100";
+		this.mLatitude = "11.420000";
+		this.mWarning = "0";
 	}
 	
 	

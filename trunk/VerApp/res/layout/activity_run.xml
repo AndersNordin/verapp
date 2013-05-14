@@ -98,15 +98,6 @@
         android:layout_marginBottom="16dp"
         android:text="@string/start" />
 
-    <Button
-        android:id="@+id/bStartEcuManager"
-        android:layout_width="100dp"
-        android:layout_height="75dp"
-        android:visibility="invisible"
-        android:layout_alignTop="@+id/stop"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/red_button"
-        android:text="Start Ecu Manager" />
 
     <EditText
          android:visibility="invisible"
@@ -119,5 +110,22 @@
 
         <requestFocus/>
     </EditText>
+
+    <Button
+        android:id="@+id/bStartEcu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:text="Start ECU" />
+
+    <Button
+        android:id="@+id/bStopEcu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/bStartEcu"
+        android:layout_alignBottom="@+id/bStartEcu"
+        android:layout_alignLeft="@+id/start"
+        android:text="Stop ECU" />
 
 </RelativeLayout>

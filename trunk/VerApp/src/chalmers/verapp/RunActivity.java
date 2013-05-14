@@ -1,11 +1,15 @@
 package chalmers.verapp;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+
+import android.content.Context;
 import android.graphics.Color;
+import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -24,7 +28,7 @@ import chalmers.verapp.interfaces.GPSCallback;
 public class RunActivity extends BaseActivity implements GPSCallback{
 	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
-	private Button stop, start, incident;
+	private Button stop, start, incident, startECU, stopECU;
 	private Thread distThread, logThread, newLapThread;
 	private GPSManager gpsManager = null;
 
@@ -38,7 +42,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	// EcuManager
 	private EditText etInputCommand;
 	private UsbSerialDriver mSerialDevice;
-	//private UsbManager mUsbManager;
+	private UsbManager mUsbManager;
 	private EcuManagerTest mEcuManger;
 	private SystemInfo mSysteminfo;
 
@@ -60,12 +64,16 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		//Start EcuManager
-		etInputCommand = (EditText) findViewById(R.id.etInputCommand);
-		//mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
 		//Systeminfo
 		mSysteminfo = new SystemInfo();
+		
+		//Start EcuManager
+		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
+		mSerialDevice = UsbSerialProber.acquire(mUsbManager);
+		mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice, mSysteminfo);
+		
+
+		
 
 		// Initiate GPS
 		gpsManager = new GPSManager();
@@ -79,12 +87,33 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
 		stop = ((Button)findViewById(R.id.stop));
 		start = ((Button)findViewById(R.id.start));
-		
+		startECU = (Button) findViewById(R.id.bStartEcu);
+		stopECU = (Button) findViewById(R.id.bStopEcu);
 		tvSpeed.setText("Searching for GPS signal");
 
-		runLoggingThread();
-		runDistanceThread();	
 		
+		//runLoggingThread();
+		//runDistanceThread();	
+		
+		startECU.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+//				
+				mEcuManger.Send("bL0030");
+			}
+		});
+		stopECU.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mEcuManger.Send("v");
+				mEcuManger.Shutdown();
+				
+
+				
+			}
+		});
 		
 	}
 
@@ -122,14 +151,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
 			}
 
-		case R.id.bStartEcuManager:
-			mSerialDevice = UsbSerialProber.acquire(mUsbManager);
-			mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice);
-			mEcuManger.Send(etInputCommand.getText().toString());
-			clockTime.start();
-			runLoggingThread();
-			runDistanceThread();
-			break;
+//		case R.id.bStartEcuManager:
+//			mSerialDevice = UsbSerialProber.acquire(mUsbManager);
+//			mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice);
+//			mEcuManger.Send(etInputCommand.getText().toString());
+//			clockTime.start();
+//			runLoggingThread();
+//			runDistanceThread();
+//			break;
 		}
 	}
 
@@ -141,7 +170,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			@Override
 			public void run() {
 				while (true) {
-					try {
+					
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -150,10 +179,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 								mSysteminfo.setWarning("0");			
 							}
 						});
-						Thread.sleep(frequency);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+						//Thread.sleep(frequency);
+					
 				}
 			}		
 		};
@@ -211,18 +238,18 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		} */
 
 		// Ensure that the car is not passing finishLine twice on the same lap	
-		newLapThread = new Thread() {
-			public void run() {
-				try {
-					Thread.sleep(300000); 
-					validLap = true;
-				}catch (InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		};
-		
-		newLapThread.start();		
+//		newLapThread = new Thread() {
+//			public void run() {
+//				try {
+//					Thread.sleep(300000); 
+//					validLap = true;
+//				}catch (InterruptedException e) {
+//					throw new RuntimeException(e);
+//				}
+//			}
+//		};
+//		
+//		newLapThread.start();		
 
 		// Step 7: Validate that the intersection was correct, which means within 10 meters
 		// Step 8: Set timer to lock lap++;
@@ -312,7 +339,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		gpsManager.stopListening();
 		gpsManager.setGPSCallback(null);
 		gpsManager = null;
-
+		mEcuManger.Shutdown();
+		try {
+			mSerialDevice.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		super.onDestroy();
 	}
 	
@@ -320,6 +353,12 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	public void onBackPressed() {
 		super.onBackPressed();
 		mEcuManger.Shutdown();
+		try {
+			mSerialDevice.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		shutdown();		
 	}
 	
