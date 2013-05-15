@@ -5,11 +5,11 @@
         android:orderInCategory="98"
         android:showAsAction="never"
         android:title="@string/menu_reset"/>
-    <item
+  <!--   <item
         android:id="@+id/menu_settings"
         android:orderInCategory="99"
         android:showAsAction="never"
-        android:title="@string/menu_settings"/>
+        android:title="@string/menu_settings"/>--> 
     <item
         android:id="@+id/menu_exit"
         android:orderInCategory="100"

@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.driver.UsbSerialProber;
-
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.hardware.usb.UsbManager;
 import android.location.Location;
@@ -18,17 +17,24 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import chalmers.verapp.base.BaseActivity;
 import chalmers.verapp.ecu_connection.EcuManagerTest;
 import chalmers.verapp.interfaces.GPSCallback;
 
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
+
+/**
+ * Main activity. Contains everything that involves run mode.
+ * @author Anders Nordin
+ */
 public class RunActivity extends BaseActivity implements GPSCallback{
+	// GUI
 	private Chronometer clockTime = null;
 	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
-	private Button stop, start, incident, startECU, stopECU;
+	private Button stop, start;
 	private Thread distThread, logThread, newLapThread;
 	private GPSManager gpsManager = null;
 
@@ -38,9 +44,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	private ArrayList<Long> lapTimes = new ArrayList<Long>();
 	private boolean validLap = false;
 	private double totalDistance = 0;
-	
+	private String avgSpeedString;
+
 	// EcuManager
-	private EditText etInputCommand;
 	private UsbSerialDriver mSerialDevice;
 	private UsbManager mUsbManager;
 	private EcuManagerTest mEcuManger;
@@ -49,31 +55,27 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	// Location points	 
 	private Location _currentPos, secondLatestPos, startPos;
 
-	// Representing the complete finish line
-	/*
-	private Location finishLinePointTwo = new Location("Finish Line Point to the left");
-	private Location finishLinePointOne = new Location("Finish Line Point to the right");
-	*/
+	final Context context = this;
 
+	// Representing the complete finish line
+	/* private Location finishLinePointTwo = new Location("Finish Line Point to the left");
+	private Location finishLinePointOne = new Location("Finish Line Point to the right"); */
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
-		
+
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		//Systeminfo
 		mSysteminfo = new SystemInfo();
-		
+
 		//Start EcuManager
 		mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 		mSerialDevice = UsbSerialProber.acquire(mUsbManager);
-		mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice, mSysteminfo);
-		
-
-		
+		mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice, mSysteminfo);	
 
 		// Initiate GPS
 		gpsManager = new GPSManager();
@@ -87,48 +89,46 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
 		stop = ((Button)findViewById(R.id.stop));
 		start = ((Button)findViewById(R.id.start));
-		startECU = (Button) findViewById(R.id.bStartEcu);
-		stopECU = (Button) findViewById(R.id.bStopEcu);
+		/* startECU = (Button) findViewById(R.id.bStartEcu);
+		stopECU = (Button) findViewById(R.id.bStopEcu); */
 		tvSpeed.setText("Searching for GPS signal");
 
-		
-		//runLoggingThread();
-		//runDistanceThread();	
-		
-		startECU.setOnClickListener(new View.OnClickListener() {
-			
+		runLoggingThread();
+		runDistanceThread();	 
+
+
+		/* startECU.setOnClickListener(new View.OnClickListener() {
+
 			@Override
-			public void onClick(View v) {
-//				
+			public void onClick(View v) {				
 				mEcuManger.Send("bL0030");
 			}
-		});
-		stopECU.setOnClickListener(new View.OnClickListener() {
-			
+		});		
+		stopECU.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				mEcuManger.Send("v");
-				mEcuManger.Shutdown();
-				
-
-				
+				mEcuManger.Shutdown();				
 			}
-		});
-		
+		});		*/
+
+
+
 	}
 
 	public void ButtonOnClick(View v) {
 		switch(v.getId()){
 		case R.id.stop:
 			if(timeIsRunning){
+				mEcuManger.Send("v"); // end logging
+				mEcuManger.Shutdown();		
 				timeWhenStopped = clockTime.getBase() - SystemClock.elapsedRealtime();
 				clockTime.stop();
 				timeIsRunning = false;
 				stop.setEnabled(false);
 				start.setEnabled(true);
-			
-				
 				Toast.makeText(getApplicationContext(), "Stopped", Toast.LENGTH_SHORT).show();
+				printEndRace();
 			}	        
 			break;
 		case R.id.incident:
@@ -136,13 +136,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			Toast.makeText(getApplicationContext(), "Warning Sent", Toast.LENGTH_SHORT).show();
 			break;
 		case R.id.start:
-			if(!timeIsRunning){						
+			if(!timeIsRunning){
+				mEcuManger.Send("bL0030"); // Start logging cmd
 				clockTime.setBase(SystemClock.elapsedRealtime() + timeWhenStopped);
 				clockTime.start();		
 				timeIsRunning = true;
 				stop.setEnabled(true);
 				start.setEnabled(false);
-			
+
 				if(timeWhenStopped == 0){
 					Toast.makeText(getApplicationContext(), "Started", Toast.LENGTH_SHORT).show();
 					start.setText("Resume");
@@ -151,14 +152,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					Toast.makeText(getApplicationContext(), "Resumed", Toast.LENGTH_SHORT).show();
 			}
 
-//		case R.id.bStartEcuManager:
-//			mSerialDevice = UsbSerialProber.acquire(mUsbManager);
-//			mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice);
-//			mEcuManger.Send(etInputCommand.getText().toString());
-//			clockTime.start();
-//			runLoggingThread();
-//			runDistanceThread();
-//			break;
+			//		case R.id.bStartEcuManager:
+			//			mSerialDevice = UsbSerialProber.acquire(mUsbManager);
+			//			mEcuManger = new EcuManagerTest(mUsbManager, mSerialDevice);
+			//			mEcuManger.Send(etInputCommand.getText().toString());
+			//			clockTime.start();
+			//			runLoggingThread();
+			//			runDistanceThread();
+			//			break;
 		}
 	}
 
@@ -166,21 +167,13 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * A fix for Ice Cream Sandwhich and lower. Start load class in UI Thread
 	 */
 	private void runLoggingThread(){		
-		logThread = new Thread() {
+		logThread = new Thread(){
 			@Override
 			public void run() {
 				while (true) {
-					
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								// if(timeIsRunning)									
-									new FileManager().execute(); // Send files
-								mSysteminfo.setWarning("0");			
-							}
-						});
-						//Thread.sleep(frequency);
-					
+					if(timeIsRunning)									
+						new FileManager().execute(); 
+					mSysteminfo.setWarning("0");
 				}
 			}		
 		};
@@ -193,26 +186,28 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	 * with the latest coordinate
 	 */
 	public void onGPSUpdate(Location currentPos){	
-		if(timeIsRunning){
-			_currentPos = currentPos;
-			mSysteminfo.setLatitude(""+currentPos.getLatitude());
-			mSysteminfo.setLatitude(""+currentPos.getLongitude());
-		}
+		_currentPos = currentPos;
 
 		if(clockTime == null){
 			clockTime = (Chronometer)findViewById(R.id.clockTime);
 			tvSpeed.setText("GPS signal OK");
-			((Button)findViewById(R.id.start)).setEnabled(true);
+			start.setEnabled(true);
 			mSysteminfo.setWarning("0");
 		}
 
 		Log.i("GPS UPDATE","(" + currentPos.getLatitude() + "," + currentPos.getLongitude() + ") Dir: " + currentPos.getBearing());
 
-		// Step 1: Set starting coordinate
-		if(startPos == null)
-			startPos = currentPos;
+		if(timeIsRunning){			
+			mSysteminfo.setLatitude(""+currentPos.getLatitude());
+			mSysteminfo.setLatitude(""+currentPos.getLongitude());
 
-		/*// Step 2: Set starting bearing	
+
+
+			// Step 1: Set starting coordinate
+			if(startPos == null)
+				startPos = currentPos;
+
+			/*// Step 2: Set starting bearing	
 		// Step 3: Calculate finish line	
 		if(currentPos.hasBearing() && bearingStart == 999.0){
 			bearingStart = currentPos.getBearing();			
@@ -237,72 +232,69 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			Log.i("The distance is:", "" + currentPos.distanceTo(startPos));
 		} */
 
-		// Ensure that the car is not passing finishLine twice on the same lap	
-//		newLapThread = new Thread() {
-//			public void run() {
-//				try {
-//					Thread.sleep(300000); 
-//					validLap = true;
-//				}catch (InterruptedException e) {
-//					throw new RuntimeException(e);
-//				}
-//			}
-//		};
-//		
-//		newLapThread.start();		
+			// Ensure that the car is not passing finishLine twice on the same lap	
+			newLapThread = new Thread() {
+				public void run() {
+					try {
+						Thread.sleep(15000); 
+						validLap = true;
+					}catch (InterruptedException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			};
 
-		// Step 7: Validate that the intersection was correct, which means within 10 meters
-		// Step 8: Set timer to lock lap++;
-		if((currentPos.distanceTo(startPos) < 10) && validLap){
-			Log.i("NEW LAP", "LAP++");
+			newLapThread.start();		
 
-			Long timeInMilliSec = (SystemClock.elapsedRealtime() - clockTime.getBase()); // in ms
+			// Step 7: Validate that the intersection was correct, which means within 10 meters
+			// Step 8: Set timer to lock lap++;
+			if((currentPos.distanceTo(startPos) < 10) && validLap){
+				Long timeInMilliSec = (SystemClock.elapsedRealtime() - clockTime.getBase()); // in ms
 
-			int size = lapTimes.size();
-			if(size > 0){ // not first lap
-				for(Long t : lapTimes)
-					timeInMilliSec = timeInMilliSec - t;				
+				int size = lapTimes.size();
+				if(size > 0){ // not first lap
+					for(Long t : lapTimes)
+						timeInMilliSec = timeInMilliSec - t;				
+				}
+				lapTimes.add(timeInMilliSec);
+				size++;
+
+				tvLapTime1.setText("Lap "+ size + ": " + createTimeString(timeInMilliSec));
+
+				if(size > 1){
+					timeInMilliSec = lapTimes.get(size-2);
+					tvLapTime2.setText("Lap "+ (size-1)+ ": " + createTimeString(timeInMilliSec));
+				}					
+				validLap = false;
 			}
-			lapTimes.add(timeInMilliSec);
-			size++;
 
-			int seconds = (int) (timeInMilliSec / 1000) % 60 ;
-			int minutes = (int) ((timeInMilliSec / (1000*60)) % 60);
-			int hours   = (int) ((timeInMilliSec / (1000*60*60)) % 24);
-
-			tvLapTime1.setText("Lap "+ size + ": " + hours + ":" + minutes + ":" + seconds );
-
-			if(size > 1){
-				timeInMilliSec = lapTimes.get(size-2);
-				seconds = (int) (timeInMilliSec / 1000) % 60 ;
-				minutes = (int) ((timeInMilliSec / (1000*60)) % 60);
-				hours   = (int) ((timeInMilliSec / (1000*60*60)) % 24);
-
-				tvLapTime2.setText("Lap "+ (size-1)+ ": " + hours + ":" + minutes + ":" + seconds);
-			}					
-			validLap = false;
-		}
-
-		// Display speed
-		if(timeIsRunning){
-			double currentSpeed = currentPos.getSpeed();
+			// Display speed
+			double currentSpeed = _currentPos.getSpeed();
 			String speedString = "" + roundDecimal(convertToKMH(currentSpeed),2);
 			this.tvSpeed.setText(speedString + " km/h");
+
+			// Display average speed
+			avgSpeedString = "" + roundDecimal(convertToKMH(totalDistance/((double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000)), 2);
+
+			// Display color of average speed
+			if(Double.valueOf(avgSpeedString) > 25)
+				avgSpeed.setTextColor(Color.GREEN);
+			else
+				avgSpeed.setTextColor(Color.RED);
+
+			avgSpeed.setText("Avg Speed: " + avgSpeedString + " km/h");		
+
+			if(secondLatestPos == null && timeIsRunning)
+				secondLatestPos = currentPos;
 		}
+	}
 
-		// Display average speed
-		String avgSpeedString = "" + roundDecimal(convertToKMH(totalDistance/((double)(SystemClock.elapsedRealtime() - clockTime.getBase()) / 1000)), 2);
+	private String createTimeString(Long time){
+		int seconds = (int) (time / 1000) % 60 ;
+		int minutes = (int) ((time/ (1000*60)) % 60);
+		int hours   = (int) ((time / (1000*60*60)) % 24);
 
-		// Display color of average speed
-		if(Double.valueOf(avgSpeedString) > 25)
-			avgSpeed.setTextColor(Color.GREEN);
-		else
-			avgSpeed.setTextColor(Color.RED);
-
-		avgSpeed.setText("Avg Speed: " + avgSpeedString + " km/h");		
-
-		if(secondLatestPos == null && timeIsRunning)
-			secondLatestPos = _currentPos;
+		return(hours + ":" + minutes + ":" + seconds );
 	}
 
 	/**
@@ -313,11 +305,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			public void run() {
 				while (true) {
 					try {
-						if(_currentPos != null && secondLatestPos != null && timeIsRunning){
-							if(secondLatestPos.getLongitude() != 0 && secondLatestPos.getLatitude() != 0 && _currentPos.hasSpeed()){
-								totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
-								Log.i("TOTAL DISTANCE", "" + totalDistance);
-							}	
+						if(_currentPos != null && secondLatestPos != null && timeIsRunning && _currentPos.hasSpeed()){
+							totalDistance = totalDistance + secondLatestPos.distanceTo(_currentPos); // in meters
+							Log.i("TOTAL DISTANCE", "" + totalDistance);							
 							secondLatestPos = _currentPos;
 							Thread.sleep(2000);
 						}
@@ -343,12 +333,11 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		try {
 			mSerialDevice.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		super.onDestroy();
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
@@ -356,12 +345,11 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		try {
 			mSerialDevice.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		shutdown();		
 	}
-	
+
 	private void closeDistThread(){
 		distThread.interrupt();
 		try {
@@ -370,7 +358,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void closeNewLapThread(){
 		logThread.interrupt();
 		try {
@@ -379,7 +367,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void closeLogThread(){
 		distThread.interrupt();
 		try {
@@ -388,7 +376,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void shutdown(){
 		closeDistThread();
 		closeLogThread();
@@ -417,6 +405,48 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		value = bd.doubleValue();
 
 		return value;
+	}
+
+	private void printEndRace(){
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+		// set title
+		alertDialogBuilder.setTitle("Do you want to end race?");
+
+		String summaryString = "Summary \n\n" + 
+				"Total time: " + createTimeString(SystemClock.elapsedRealtime() - clockTime.getBase()) + "\n"	+
+				"Total Distance: " + roundDecimal(totalDistance,1) + " m \n" +			
+				"Avg Speed: " + avgSpeedString + " km/h \n" +
+				"Laps: " + lapTimes.size() + "\n";
+		int lapNr = 1;
+		for(Long l : lapTimes){
+			summaryString += "Lap " + lapNr + ": " + createTimeString(l);
+			lapNr++;
+		}
+
+		if(lapNr == 1)
+			summaryString += "No laps completed";
+
+		// set dialog message
+		alertDialogBuilder
+		.setMessage(summaryString)
+		.setCancelable(false)
+		.setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				callRealEnd();
+			}
+		})
+		.setNegativeButton("No",new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog,int id) {
+				dialog.cancel();
+			}
+		});
+
+		// create alert dialog
+		AlertDialog alertDialog = alertDialogBuilder.create();
+
+		// show it
+		alertDialog.show();
 	}
 
 	/**

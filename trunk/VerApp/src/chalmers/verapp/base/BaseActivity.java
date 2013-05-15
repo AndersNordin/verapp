@@ -2,15 +2,12 @@ package chalmers.verapp.base;
 
 import chalmers.verapp.MainActivity;
 import chalmers.verapp.R;
-import chalmers.verapp.settings.SettingsActivity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.hardware.usb.UsbManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -27,8 +24,6 @@ public class BaseActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		// Disable landscape mode
 		setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
-		//mUsbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 	}	
 
 	@Override
@@ -58,9 +53,9 @@ public class BaseActivity extends Activity {
 			Intent intent = new Intent(BaseActivity.this, MainActivity.class);
 			startActivity(intent);	
 			return true;
-		case R.id.menu_settings:
+		/* case R.id.menu_settings:
 			startActivityForResult(new Intent(BaseActivity.this, SettingsActivity.class), RESULT_SETTINGS);
-			return true;
+			return true; */
 
 		case R.id.menu_exit:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -81,7 +76,7 @@ public class BaseActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				switch (which){
 				case DialogInterface.BUTTON_POSITIVE:
-					BaseActivity.super.onBackPressed();
+					callRealEnd();
 					break;
 				}
 			}
@@ -99,4 +94,10 @@ public class BaseActivity extends Activity {
 			Toast.makeText(getApplicationContext(), "Log Interval: " + (frequency/1000) + "s", Toast.LENGTH_SHORT).show();
 		}
 	}
+	
+	public void callRealEnd(){
+		BaseActivity.super.onBackPressed();
+	}
+	
+	
 }
