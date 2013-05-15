@@ -1,9 +1,7 @@
 package chalmers.verapp.ecu_connection;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -356,14 +354,14 @@ private void startReadThread(){
 		
 	}
 	
-    private void onDeviceStateChange() {
+//    private void onDeviceStateChange() {
 //        stopIoManager();
 //        stopWriteThread();
 //        startIoManager();
 //        startReadThread();
 //        startWriteThread();
         
-    }
+ //   }
 	
 	
 
