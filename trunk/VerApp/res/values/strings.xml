@@ -27,6 +27,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_base">BaseActivity</string>
     <string name="nothingToDisplay">-</string>
+    <string name="text_steer"></string>
 
     <!-- Settings -->
     <string name="pref_freq">Frequency</string>

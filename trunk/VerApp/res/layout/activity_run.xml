@@ -128,4 +128,43 @@
         android:layout_alignLeft="@+id/start"
         android:text="Stop ECU" />
 
+    
+      <View
+          android:id="@+id/myRectangleView"
+          android:layout_width="300dp"
+          android:layout_height="60dp"
+          android:layout_alignTop="@+id/bStartEcu"
+          android:layout_centerHorizontal="true"
+          android:background="@drawable/rectangle" />
+    
+    <View
+        android:id="@+id/myRectangleView2"
+        android:layout_width="0dp"     
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/myRectangleView"
+        android:layout_alignLeft="@+id/myRectangleView"
+        android:layout_alignTop="@+id/myRectangleView"
+        android:layout_marginLeft="48dp"
+        android:background="@drawable/rectangle2" />
+    
+     <View
+        android:id="@+id/theLine"
+        android:layout_width="2dip"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@+id/myRectangleView"
+        android:layout_alignTop="@+id/myRectangleView"
+        android:layout_centerHorizontal="true"
+        android:background="#000" />
+    
+      <TextView
+            android:id="@+id/dispSteer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/myRectangleView2"
+            android:layout_alignLeft="@+id/myRectangleView2"
+            android:text="@string/text_steer"
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+
 </RelativeLayout>
