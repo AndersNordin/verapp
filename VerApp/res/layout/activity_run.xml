@@ -11,21 +11,20 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="16dp"
-        android:onClick="ButtonOnClick"
-        android:enabled="false"
         android:background="@drawable/red_button"
+        android:enabled="false"
+        android:onClick="ButtonOnClick"
         android:text="@string/stop_button" />
-    
 
     <Button
         android:id="@+id/incident"
         android:layout_width="100dp"
-        android:onClick="ButtonOnClick"
         android:layout_height="75dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/yellow_button"
+        android:onClick="ButtonOnClick"
         android:text="@string/incident_button" />
 
     <TextView
@@ -44,8 +43,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvSpeed"
-        android:text="@string/avgSpeed_init"
         android:layout_centerHorizontal="true"
+        android:text="@string/avgSpeed_init"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Chronometer
@@ -89,65 +88,50 @@
         android:id="@+id/start"
         android:layout_width="100dp"
         android:layout_height="75dp"
-        android:onClick="ButtonOnClick"
-        android:enabled="false"
         android:layout_alignBaseline="@+id/stop"
         android:layout_alignBottom="@+id/stop"
         android:layout_alignParentRight="true"
-        android:background="@drawable/green_button"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/green_button"
+        android:enabled="false"
+        android:onClick="ButtonOnClick"
         android:text="@string/start" />
 
-
-    <EditText
-         android:visibility="invisible"
-        android:id="@+id/etInputCommand"
+    <TextView
+        android:id="@+id/dispSteer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/incident"
+        android:layout_above="@+id/myRectangleView2"
+        android:layout_alignLeft="@+id/myRectangleView2"
+        android:text="@string/text_steer"
+        android:textColor="#000000"
+        android:textSize="20sp" />
+
+    <View
+        android:id="@+id/myRectangleView"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
         android:layout_centerHorizontal="true"
-        android:ems="10" >
+        android:layout_centerVertical="true"
+        android:background="@drawable/rectangle" />
 
-        <requestFocus/>
-    </EditText>
-
-
-    
-      <View
-          android:id="@+id/myRectangleView"
-          android:layout_width="300dp"
-          android:layout_height="60dp"
-          android:layout_centerHorizontal="true"
-          android:background="@drawable/rectangle" />
-    
     <View
         android:id="@+id/myRectangleView2"
-        android:layout_width="0dp"     
+        android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/myRectangleView"
         android:layout_alignLeft="@+id/myRectangleView"
         android:layout_alignTop="@+id/myRectangleView"
         android:layout_marginLeft="48dp"
         android:background="@drawable/rectangle2" />
-    
-     <View
+
+    <View
         android:id="@+id/theLine"
-        android:layout_width="2dip"
+        android:layout_width="2dp"
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/myRectangleView"
         android:layout_alignTop="@+id/myRectangleView"
         android:layout_centerHorizontal="true"
         android:background="#000" />
-    
-      <TextView
-            android:id="@+id/dispSteer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/myRectangleView2"
-            android:layout_alignLeft="@+id/myRectangleView2"
-            android:text="@string/text_steer"
-            android:textColor="#000000"
-            android:textSize="20sp" />
-
 
 </RelativeLayout>
