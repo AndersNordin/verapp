@@ -11,6 +11,7 @@ import android.hardware.usb.UsbManager;
 import android.util.Log;
 
 import chalmers.verapp.SystemInfo;
+import chalmers.verapp.interfaces.ILogger;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;

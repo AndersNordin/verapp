@@ -111,29 +111,12 @@
         <requestFocus/>
     </EditText>
 
-    <Button
-        android:id="@+id/bStartEcu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:text="Start ECU" />
-
-    <Button
-        android:id="@+id/bStopEcu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/bStartEcu"
-        android:layout_alignBottom="@+id/bStartEcu"
-        android:layout_alignLeft="@+id/start"
-        android:text="Stop ECU" />
 
     
       <View
           android:id="@+id/myRectangleView"
           android:layout_width="300dp"
           android:layout_height="60dp"
-          android:layout_alignTop="@+id/bStartEcu"
           android:layout_centerHorizontal="true"
           android:background="@drawable/rectangle" />
     
