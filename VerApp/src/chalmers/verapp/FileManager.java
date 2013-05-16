@@ -12,6 +12,7 @@ import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -19,9 +20,8 @@ import android.util.Log;
 /**
  * Sending files from folder to web server.
  * @author Anders Nordin
- *
  */
-public class FileManager extends AsyncTask<Void, Void, Void>{
+public class FileManager extends AsyncTask<String[], Void, Void>{
 	private static final String URL = "http://www.chalmersverateam.se/verApp.php"; 
 
 	public static final File FILE_HISTORY_DIR = new File(Environment.getExternalStorageDirectory() +
@@ -29,7 +29,7 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 	public static final File FILE_LOGS_DIR = new File(Environment.getExternalStorageDirectory() +
 			"/Android/data/com.chalmers.civinco/files/");
 	public static final File FILE_HISTORY = new File(FILE_HISTORY_DIR, "file_history.txt");
-	private String[] listOfFiles;
+
 
 	/**
 	 * List all files present in the folder
@@ -38,25 +38,23 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 	protected void onPreExecute() {
 		if(!FILE_HISTORY_DIR.exists())
 			FILE_HISTORY_DIR.mkdirs();
-
-		listOfFiles = FILE_LOGS_DIR.list();
 	}
 
 	// http://stackoverflow.com/questions/7943620/error-while-trying-to-upload-file-from-android
 	@Override
-	protected Void doInBackground(Void...voids){	
+	protected Void doInBackground(String[]...listOfFiles){	
+		Log.i("SIZE",""+ listOfFiles.length );
 		HashMap<String, String> sentFiles = readFromFile();
 		for (int i = 0; i < listOfFiles.length; i++) {
 			// Exclude directories
 			String extension = "NOT ZIP";
-
+			
 			// Excluding folders, they will cause errors otherwise
 			if(new File(FILE_LOGS_DIR + "/" + listOfFiles[i]).isFile())
 				extension = getExtension(listOfFiles[i].toString());			
 			
 			if(sentFiles.get(listOfFiles[i]) == null && extension.equals("zip") ){
-				addToFileHistory(listOfFiles[i]);
-				Log.i("FILE SENT", listOfFiles[i]);
+				addToFileHistory(listOfFiles[i].toString());
 				
 				HttpURLConnection connection = null;
 				DataOutputStream outputStream = null;

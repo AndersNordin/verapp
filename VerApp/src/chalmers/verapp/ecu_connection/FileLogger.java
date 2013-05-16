@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 
+import chalmers.verapp.interfaces.ILogger;
+
 import android.os.Environment;
 
 

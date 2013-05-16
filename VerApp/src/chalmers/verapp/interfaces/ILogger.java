@@ -1,4 +1,4 @@
-package chalmers.verapp.ecu_connection;
+package chalmers.verapp.interfaces;
 
 public interface ILogger {
     void Open();
