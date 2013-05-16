@@ -30,26 +30,32 @@ public final class R {
         public static final int green_button=0x7f020002;
         public static final int ic_launcher=0x7f020003;
         public static final int logo=0x7f020004;
-        public static final int red_button=0x7f020005;
-        public static final int yellow_button=0x7f020006;
+        public static final int rectangle=0x7f020005;
+        public static final int rectangle2=0x7f020006;
+        public static final int red_button=0x7f020007;
+        public static final int yellow_button=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0010;
+        public static final int action_settings=0x7f0a0014;
         public static final int avgSpeed=0x7f0a0004;
         public static final int bStartEcu=0x7f0a000b;
         public static final int bStopEcu=0x7f0a000c;
         public static final int clockTime=0x7f0a0005;
+        public static final int dispSteer=0x7f0a0010;
         public static final int etInputCommand=0x7f0a000a;
         public static final int incident=0x7f0a0002;
         public static final int lapTime=0x7f0a0006;
         public static final int lapTime2=0x7f0a0007;
         public static final int lapTime3=0x7f0a0008;
         public static final int launch=0x7f0a0000;
-        public static final int menu_exit=0x7f0a000f;
-        public static final int menu_reset=0x7f0a000d;
-        public static final int menu_settings=0x7f0a000e;
+        public static final int listview_background_shape=0x7f0a0011;
+        public static final int menu_exit=0x7f0a0013;
+        public static final int menu_reset=0x7f0a0012;
+        public static final int myRectangleView=0x7f0a000d;
+        public static final int myRectangleView2=0x7f0a000e;
         public static final int start=0x7f0a0009;
         public static final int stop=0x7f0a0001;
+        public static final int theLine=0x7f0a000f;
         public static final int tvSpeed=0x7f0a0003;
     }
     public static final class layout {
@@ -82,23 +88,24 @@ public final class R {
         public static final int nothingToDisplay=0x7f070013;
         /**  Settings 
          */
-        public static final int pref_freq=0x7f070014;
-        public static final int pref_send_report=0x7f070015;
-        public static final int pref_send_report_summary=0x7f070016;
-        public static final int pref_sync_frequency=0x7f070017;
-        public static final int pref_sync_frequency_summary=0x7f070018;
-        public static final int pref_update_setting=0x7f07001c;
-        public static final int pref_user_name=0x7f070019;
-        public static final int pref_user_name_summary=0x7f07001a;
-        public static final int pref_user_profile=0x7f07001b;
+        public static final int pref_freq=0x7f070015;
+        public static final int pref_send_report=0x7f070016;
+        public static final int pref_send_report_summary=0x7f070017;
+        public static final int pref_sync_frequency=0x7f070018;
+        public static final int pref_sync_frequency_summary=0x7f070019;
+        public static final int pref_update_setting=0x7f07001d;
+        public static final int pref_user_name=0x7f07001a;
+        public static final int pref_user_name_summary=0x7f07001b;
+        public static final int pref_user_profile=0x7f07001c;
         public static final int resume=0x7f070008;
         public static final int speed_init=0x7f07000c;
         public static final int start=0x7f070007;
         public static final int stop_button=0x7f070009;
+        public static final int text_steer=0x7f070014;
         public static final int title_activity_base=0x7f070012;
         public static final int title_activity_main=0x7f07000e;
         public static final int title_activity_run=0x7f070010;
-        public static final int title_activity_settings=0x7f07001d;
+        public static final int title_activity_settings=0x7f07001e;
         public static final int title_frequency_logging=0x7f070004;
     }
     public static final class style {
