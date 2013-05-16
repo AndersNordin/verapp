@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import chalmers.verapp.base.BaseActivity;
@@ -33,10 +36,17 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 public class RunActivity extends BaseActivity implements GPSCallback{
 	// GUI
 	private Chronometer clockTime = null;
-	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed;
+	private TextView tvSpeed, tvLapTime1, tvLapTime2, avgSpeed, textSteer;
 	private Button stop, start;
 	private Thread distThread, logThread, newLapThread;
 	private GPSManager gpsManager = null;
+	private View rect, rect2;
+
+	// steering indicator
+	int nomSteer = 500; // calibrated nominal value
+	int maxSteer; // max value steering
+	int minSteer; // min value steering
+	int diff; // the amount the steering can differ around its nominal value
 
 	// Values 
 	private long timeWhenStopped = 0;
@@ -92,6 +102,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		/* startECU = (Button) findViewById(R.id.bStartEcu);
 		stopECU = (Button) findViewById(R.id.bStopEcu); */
 		tvSpeed.setText("Searching for GPS signal");
+		rect = (View) findViewById(R.id.myRectangleView);
+		rect2 = (View) findViewById(R.id.myRectangleView2);
+		textSteer = (TextView) findViewById(R.id.dispSteer);
 
 		runLoggingThread();
 		runDistanceThread();	 
@@ -243,7 +256,6 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 					}
 				}
 			};
-
 			newLapThread.start();		
 
 			// Step 7: Validate that the intersection was correct, which means within 10 meters
@@ -447,6 +459,64 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 
 		// show it
 		alertDialog.show();
+	}
+
+	/**
+	 * Changes the steering indicator according to the logged value.
+	 * 
+	 * @param steer
+	 *            , the steering
+	 */
+
+	public void theRectangle(int steer) {
+
+		RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams) rect2
+				.getLayoutParams();
+
+		RelativeLayout.LayoutParams t = (RelativeLayout.LayoutParams) textSteer
+				.getLayoutParams();
+
+		// setting the width of the bar
+		rect2.getLayoutParams().width = Math.abs(steer - nomSteer)
+				* (rect.getLayoutParams().width) / (maxSteer - minSteer);
+
+		// displaying the steering
+
+		textSteer.setText(Integer.toString(steer));
+
+		// the driver is turning left
+
+		if (steer < nomSteer) {
+
+			params2.leftMargin = rect.getLayoutParams().width / 2
+					- rect2.getLayoutParams().width;
+
+			t.leftMargin = 0;
+
+		}
+
+		// the driver is turning right
+
+		else {
+
+			params2.leftMargin = rect.getLayoutParams().width / 2;
+			t.leftMargin = rect2.getLayoutParams().width - textSteer.getWidth();
+
+		}
+		GradientDrawable sd = (GradientDrawable) rect2.getBackground().mutate();
+
+		// the steering is outside the accepted interval => red color
+
+		if (Math.abs(steer - nomSteer) > diff / 3)
+			sd.setColor(0xffff0000); //
+
+		// the steering is within the accepted interval => green color
+
+		else
+			sd.setColor(0xff00ff00);
+
+		sd.invalidateSelf();
+
 	}
 
 	/**
