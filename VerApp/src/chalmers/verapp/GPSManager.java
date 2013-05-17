@@ -12,6 +12,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+/**
+ * @author Anders Nordin
+ */
 public class GPSManager
 {
 	private static final int gpsMinTime = 500;
