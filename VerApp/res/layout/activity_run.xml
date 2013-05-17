@@ -35,8 +35,9 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/speed_init"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#000000"
-        android:textSize="50sp" />
+        android:textSize="35sp" />
 
     <TextView
         android:id="@+id/avgSpeed"
@@ -51,7 +52,7 @@
         android:id="@+id/clockTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/avgSpeed"
+        android:layout_above="@+id/lapTime"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="85dp"
         android:textColor="#000000"
@@ -61,7 +62,7 @@
         android:id="@+id/lapTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/clockTime"
+        android:layout_above="@+id/lapTime2"
         android:layout_centerHorizontal="true"
         android:text="@string/latestlaps"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -70,7 +71,7 @@
         android:id="@+id/lapTime2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/lapTime"
+        android:layout_above="@+id/stop"
         android:layout_centerHorizontal="true"
         android:text="@string/nothingToDisplay"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -111,8 +112,8 @@
         android:id="@+id/myRectangleView"
         android:layout_width="300dp"
         android:layout_height="60dp"
+        android:layout_above="@+id/clockTime"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:background="@drawable/rectangle" />
 
     <View
@@ -127,7 +128,7 @@
 
     <View
         android:id="@+id/theLine"
-        android:layout_width="2dp"
+        android:layout_width="2dip"
         android:layout_height="match_parent"
         android:layout_alignBottom="@+id/myRectangleView"
         android:layout_alignTop="@+id/myRectangleView"

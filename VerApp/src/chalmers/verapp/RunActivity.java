@@ -45,7 +45,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	int nomSteer = 500; // calibrated nominal value
 	int maxSteer; 
 	int minSteer; 
-	int diff; // the amount the steering can differ around its nominal value
+	int diff = 300; // the amount the steering can differ around its nominal value
 
 	// Dashboard values
 	private long timeWhenStopped = 0;
@@ -69,6 +69,11 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
+		
+		
+		maxSteer = nomSteer + diff;
+		minSteer = nomSteer - diff;
+		
 
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -91,13 +96,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		avgSpeed = (TextView)findViewById(R.id.avgSpeed);
 		stop = ((Button)findViewById(R.id.stop));
 		start = ((Button)findViewById(R.id.start));
-		tvSpeed.setText("Searching for GPS signal");
+		tvSpeed.setText("Loading GPS");
 		rect = (View) findViewById(R.id.myRectangleView);
 		rect2 = (View) findViewById(R.id.myRectangleView2);
 		textSteer = (TextView) findViewById(R.id.dispSteer);
 
 		runLoggingThread();
-		runDistanceThread();	 
+		runDistanceThread();
+		theRectangle(378);
 	}
 
 	public void ButtonOnClick(View v) {
@@ -139,7 +145,10 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		}
 	}
 
-	private void runLoggingThread(){		
+	private void runLoggingThread(){
+//		File f = new File(path);
+//		new FileManager().execute();
+		
 		logThread = new Thread(){
 			@Override
 			public void run() {

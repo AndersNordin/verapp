@@ -12,6 +12,10 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import chalmers.verapp.base.BaseActivity;
 
+/**
+ * Start up screen 
+ * @author Anders Nordin
+ */
 public class MainActivity extends BaseActivity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
