@@ -30,7 +30,7 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 /**
  * Main activity. Contains everything that involves run mode.
- * @author Anders Nordin
+ * @author Anders Nordin, Joanna Eriksson
  */
 public class RunActivity extends BaseActivity implements GPSCallback{
 	// GUI
@@ -70,10 +70,9 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_run);
 		
-		
+		// Initiate values
 		maxSteer = nomSteer + diff;
-		minSteer = nomSteer - diff;
-		
+		minSteer = nomSteer - diff;		
 
 		// Screen always active
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -101,9 +100,8 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		rect2 = (View) findViewById(R.id.myRectangleView2);
 		textSteer = (TextView) findViewById(R.id.dispSteer);
 
-		runLoggingThread();
+		// runLoggingThread();
 		runDistanceThread();
-		theRectangle(378);
 	}
 
 	public void ButtonOnClick(View v) {
@@ -145,10 +143,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 		}
 	}
 
-	private void runLoggingThread(){
-//		File f = new File(path);
-//		new FileManager().execute();
-		
+/*	private void runLoggingThread(){
 		logThread = new Thread(){
 			@Override
 			public void run() {
@@ -160,7 +155,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			}		
 		};
 		logThread.start();	
-	}
+	}*/
 
 	@Override
 	/**
@@ -303,7 +298,7 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			e.printStackTrace();
 		}
 		closeDistThread();
-		closeLogThread();	
+		// closeLogThread();	
 	}
 
 	private void closeDistThread(){
@@ -314,14 +309,14 @@ public class RunActivity extends BaseActivity implements GPSCallback{
 			e.printStackTrace();
 		}
 	}
-	private void closeLogThread(){
+	/*private void closeLogThread(){
 		logThread.interrupt();
 		try {
 			logThread.join(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	/**
 	 * Converts speed from meter per second to kilometer per hour
