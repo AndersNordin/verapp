@@ -12,6 +12,7 @@ public class SystemInfo {
 	private String mLongitude = "";
 	private String mLatitude = "";
 	private String mWarning = "";
+	private int steering;
 	
 	private Object mLongitudeLock = new Object();
 	private Object mLatitudeLock = new Object();
@@ -64,6 +65,10 @@ public class SystemInfo {
 		{
 			this.mLongitude = longitude;
 		}
+	}
+	
+	public int getSteering(){
+		return steering;
 	}
 	
 	
