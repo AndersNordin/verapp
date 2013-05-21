@@ -227,8 +227,8 @@ private void startReadThread(){
 									shortMsg.add(val);
 								}
 								
-								mLogger.WriteLine(" " +shortMsg.toString() +" sWheelSpeed," +
-										"sG-force sChain sCamber sSteering "+" "+mSystemInfo.getWarning()+" "+mSystemInfo.getLongitude()+" "+mSystemInfo.getLatitude() + "\n");
+								mLogger.WriteLine(" " +shortMsg.toString() +"  10" +
+										"  11  12  13  14"+"  "+mSystemInfo.getLongitude()+"  "+mSystemInfo.getLatitude() +"  "+mSystemInfo.getWarning()+ "  10000\n");
 								}
 							shortMsg.clear();
 							message.clear();

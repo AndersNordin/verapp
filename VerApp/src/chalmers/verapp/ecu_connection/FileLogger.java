@@ -12,6 +12,7 @@ import chalmers.verapp.FileManager;
 import chalmers.verapp.interfaces.ILogger;
 
 import android.os.Environment;
+import android.util.Log;
 
 
 public class FileLogger implements ILogger {
@@ -27,6 +28,12 @@ public class FileLogger implements ILogger {
 	public FileLogger(){
 		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );
 		
+	}
+
+	private void deleteFile(String path){
+		File file = new File(path);
+		boolean deleted =file.delete();
+		Log.d("FileLogger succesfully deleted file: ", ""+deleted);
 	}
 
 	@Override
@@ -78,7 +85,9 @@ public class FileLogger implements ILogger {
 				Close();
 				ZipUtility zipUtility = new ZipUtility(mOutputPath, mOutputPath + ".zip", true);
 				zipUtility.Zip();
+				deleteFile(mOutputPath);
 				Open();
+
 			}
 			mOutputFile.flush();
 		} catch (IOException e) {
