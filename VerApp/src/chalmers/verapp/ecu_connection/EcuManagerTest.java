@@ -46,16 +46,8 @@ public class EcuManagerTest {
 				}
 			};
 			mEcuManagerThread.start();
-//			MainActivity.this.runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					MainActivity.this.updateReceivedData(data);
-//				}
-//			});
 		}
-
-	};
-	
+	};	
 	
 	public EcuManagerTest(UsbManager manager, UsbSerialDriver usbSerial, SystemInfo sysinfo ){
 		mUsbManager = manager;

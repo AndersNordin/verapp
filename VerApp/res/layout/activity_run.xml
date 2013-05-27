@@ -135,4 +135,24 @@
         android:layout_centerHorizontal="true"
         android:background="#000" />
 
+    <Button
+        android:id="@+id/ecuStop"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/myRectangleView"
+        android:layout_marginTop="36dp"
+        android:text="stop" />
+
+    <Button
+        android:id="@+id/ecuStart"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/ecuStop"
+        android:layout_alignBottom="@+id/ecuStop"
+        android:layout_alignParentRight="true"
+        android:text="start" />
+
 </RelativeLayout>

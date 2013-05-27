@@ -7,13 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
-
 import chalmers.verapp.FileManager;
 import chalmers.verapp.interfaces.ILogger;
-
-import android.os.Environment;
 import android.util.Log;
-
 
 public class FileLogger implements ILogger {
 
@@ -22,11 +18,10 @@ public class FileLogger implements ILogger {
 	private BufferedOutputStream mOutputFile = null;
 	private int mCurrentCount = 0;
 	private String mOutputPath = "";
-	private int fileNr = 0;
-	
+	private int fileNr = 0;	
 	
 	public FileLogger(){
-		mBackupPath = new File(Environment.getExternalStorageDirectory() + "/Android/data/com.chalmers.civinco/files" );
+		mBackupPath = FileManager.FILES_WAITING_DIR;
 		
 	}
 
@@ -40,11 +35,9 @@ public class FileLogger implements ILogger {
 	public void Open() {
 		mCurrentCount = 0;
 		fileNr++;
-		if(!mBackupPath.exists())
-		{
+		if(!mBackupPath.exists()){
 			mBackupPath.mkdirs();
-		}
-		
+		}	
 
 		try {
 			String timeStamp = DateFormat.getDateInstance().format(new Date());
@@ -87,7 +80,6 @@ public class FileLogger implements ILogger {
 				zipUtility.Zip();
 				deleteFile(mOutputPath);
 				Open();
-
 			}
 			mOutputFile.flush();
 		} catch (IOException e) {
