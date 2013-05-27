@@ -1,12 +1,10 @@
 package chalmers.verapp;
 
 public class SystemInfo {
-
 	/* Lägg till Longitude, Latitude, varning och om det är något mer 
 	 * som ska in i zip-filen här...
 	 * Datan från sensorerna kommer också in här och in i zippen...
-	 * -Jag hämtar datan här och lägger in i zippen.
-	 * 
+	 * Jag hämtar datan här och lägger in i zippen.
 	 */
 	
 	private String mLongitude = "";
@@ -21,9 +19,8 @@ public class SystemInfo {
 	public SystemInfo(){
 		this.mLongitude = "42.1100";
 		this.mLatitude = "11.420000";
-		this.mWarning = "0";
-	}
-	
+		this.mWarning = "0";		
+	}	
 	
 	public String getLatitude() {
 		synchronized(mLatitudeLock)
@@ -70,10 +67,4 @@ public class SystemInfo {
 	public int getSteering(){
 		return steering;
 	}
-	
-
-	
-	
-	
-
 }
