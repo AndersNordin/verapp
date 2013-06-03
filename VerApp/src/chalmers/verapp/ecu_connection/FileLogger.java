@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import chalmers.verapp.FileManager;
 import chalmers.verapp.interfaces.ILogger;
+import android.os.Environment;
 import android.util.Log;
 
 public class FileLogger implements ILogger {
@@ -21,15 +22,11 @@ public class FileLogger implements ILogger {
 	private int fileNr = 0;	
 	
 	public FileLogger(){
-		mBackupPath = FileManager.FILES_WAITING_DIR;
+		mBackupPath = new File(FileManager.FILES_WAITING_DIR.toString());
 		
 	}
 
-	private void deleteFile(String path){
-		File file = new File(path);
-		boolean deleted =file.delete();
-		Log.d("FileLogger succesfully deleted file: ", ""+deleted);
-	}
+
 
 	@Override
 	public void Open() {
@@ -78,7 +75,7 @@ public class FileLogger implements ILogger {
 				Close();
 				ZipUtility zipUtility = new ZipUtility(mOutputPath, mOutputPath + ".zip", true);
 				zipUtility.Zip();
-				deleteFile(mOutputPath);
+				
 				Open();
 			}
 			mOutputFile.flush();

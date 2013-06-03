@@ -36,18 +36,20 @@ public final class R {
         public static final int yellow_button=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0011;
+        public static final int action_settings=0x7f0a0013;
         public static final int avgSpeed=0x7f0a0004;
         public static final int clockTime=0x7f0a0005;
         public static final int dispSteer=0x7f0a000a;
+        public static final int ecuStart=0x7f0a000f;
+        public static final int ecuStop=0x7f0a000e;
         public static final int incident=0x7f0a0002;
         public static final int lapTime=0x7f0a0006;
         public static final int lapTime2=0x7f0a0007;
         public static final int lapTime3=0x7f0a0008;
         public static final int launch=0x7f0a0000;
-        public static final int listview_background_shape=0x7f0a000e;
-        public static final int menu_exit=0x7f0a0010;
-        public static final int menu_reset=0x7f0a000f;
+        public static final int listview_background_shape=0x7f0a0010;
+        public static final int menu_exit=0x7f0a0012;
+        public static final int menu_reset=0x7f0a0011;
         public static final int myRectangleView=0x7f0a000c;
         public static final int myRectangleView2=0x7f0a000b;
         public static final int start=0x7f0a0009;

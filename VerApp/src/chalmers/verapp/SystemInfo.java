@@ -1,100 +1,203 @@
 package chalmers.verapp;
 
+import java.util.ArrayList;
 
 import android.util.Log;
 
 public class SystemInfo {
-	/*
-	 * Lägg till Longitude, Latitude, varning och om det är något mer som ska in
-	 * i zip-filen här... Datan från sensorerna kommer också in här och in i
-	 * zippen... Jag hämtar datan här och lägger in i zippen.
+
+	/* Lägg till Longitude, Latitude, varning och om det är något mer 
+	 * som ska in i zip-filen här...
+	 * Datan från sensorerna kommer också in här och in i zippen...
+	 * -Jag hämtar datan här och lägger in i zippen.
+	 * 
+	 * Obs! trådsäkra..
 	 */
-
-	private String mLongitude = "";
-	private String mLatitude = "";
-	private String mWarning = "";
-	private int steering;
-	private int prevSteering;
-
+	
+	private String mLongitude;
+	private String mLatitude;
+	private String mWarning;
+	//Data from sensors
+	private String mLeftWheelSpeed;
+	private String mRightWheelSpeed;
+	private String mSteering;
+	private String mLeftCamber;
+	private String mRightCamber;
+	private String mAccelerometer;
+	
 	private Object mLongitudeLock = new Object();
 	private Object mLatitudeLock = new Object();
 	private Object mWarningLock = new Object();
-	private SteeringChangeListener steeringChangeListener;
-
-	public SystemInfo() {
-		this.mLongitude = "42.1100";
-		this.mLatitude = "11.420000";
+	
+	private Object mLeftWheelSpeedLock = new Object();
+	private Object mRightWheelSpeedLock = new Object();
+	
+	private Object mSteeringLock = new Object();
+	
+	private Object mLeftCamberLock = new Object();
+	private Object mRightCamberLock = new Object();
+	private Object mAccelerometerLock = new Object();
+	
+	public SystemInfo(){
+		
+		this.mLongitude = "0";
+		this.mLatitude = "0";
 		this.mWarning = "0";
+		
+		this.mLeftWheelSpeed ="0";
+		this.mRightWheelSpeed = "0";
+		this.mSteering = "0";
+		this.mLeftCamber = "0";
+		this.mRightCamber = "0";
+		this.mAccelerometer = "0";
+		
 	}
 
+	
+	
 	public String getLatitude() {
-		synchronized (mLatitudeLock) {
+		synchronized(mLatitudeLock)
+		{
 			return mLatitude;
 		}
 	}
 
 	public void setLatitude(String latitude) {
-		synchronized (mLatitudeLock) {
+		synchronized(mLatitudeLock)
+		{
 			this.mLatitude = latitude;
 		}
 	}
 
 	public String getWarning() {
-		synchronized (mWarningLock) {
+		synchronized(mWarningLock)
+		{
 			return mWarning;
 		}
 	}
 
 	public void setWarning(String warning) {
-		synchronized (mWarningLock) {
+		synchronized(mWarningLock)
+		{
 			this.mWarning = warning;
+			Log.d("::MEDDEALNDE FRÅN SYSTEMINFO: ", warning);
 		}
 	}
 
 	public String getLongitude() {
-		synchronized (mLongitudeLock) {
+		synchronized(mLongitudeLock)
+		{
 			return mLongitude;
 		}
 	}
 
 	public void setLongitude(String longitude) {
-		synchronized (mLongitudeLock) {
+		synchronized(mLongitudeLock)
+		{
 			this.mLongitude = longitude;
 		}
 	}
+	
 
-	public int getSteering() {
-		return steering;
-	}
-
-	public int getPrevSteering() {
-		return prevSteering;
-	}
-
-	public void setSteering(int s) {
-
-		prevSteering = 0;
-		steering = s;
-		if (this.steeringChangeListener != null && (steering != prevSteering)) {
-
-			this.steeringChangeListener.onSteeringChanged(steering);
-
+	
+	public void setLeftWheelSpeed(String leftWheelSpeed) {
+		synchronized(mLeftWheelSpeedLock)
+		{
+			this.mLeftWheelSpeed = leftWheelSpeed;
+			Log.d("SET LeftWheelSpeed", leftWheelSpeed);
 		}
+	}
+	
 
+	public String getLeftWheelSpeed() {
+		synchronized(mLeftWheelSpeedLock)
+		{
+
+			Log.d("GET LeftWheelSpeed ", mLeftWheelSpeed);
+			return mLeftWheelSpeed;
+		}
+	}
+	
+	public void setRightWheelSpeed(String rightWheelSpeed) {
+		synchronized(mRightWheelSpeedLock)
+		{
+			this.mLeftWheelSpeed = rightWheelSpeed;
+			Log.d("RightWheelSpeed", rightWheelSpeed);
+		}
+	}
+	
+
+	public String getRightWheelSpeed() {
+		synchronized(mRightWheelSpeedLock)
+		{
+			return mRightWheelSpeed;
+		}
+	}
+	
+
+	
+	public void setSteering(String steering) {
+		synchronized(mSteeringLock)
+		{
+			this.mSteering = steering;
+		}
+	}
+	
+
+	public String getSteering() {
+		synchronized(mSteeringLock)
+		{
+			return mSteering;
+		}
+	}
+		
+	public void setLeftCamber(String leftCamber) {
+		synchronized(mLeftCamberLock)
+		{
+			this.mLeftCamber = leftCamber;
+		}
+	}
+	
+
+	public String getLeftCamber() {
+		synchronized(mLeftCamberLock)
+		{
+			return mLeftCamber;
+		}
+	}	
+
+	
+	public void setRightCamber(String rightCamber) {
+		synchronized(mRightCamberLock)
+		{
+			this.mRightCamber = rightCamber;
+		}
+	}
+	
+
+	public String getRightCamber() {
+		synchronized(mRightCamberLock)
+		{
+			return mRightCamber;
+		}
+	}
+	
+	
+	public void setAccelerometer(String acc) {
+		synchronized(mAccelerometerLock)
+		{
+			this.mAccelerometer = acc;
+		}
+	}
+	
+
+	public String getAccelerometer() {
+		synchronized(mAccelerometerLock)
+		{
+			return mAccelerometer;
+		}
 	}
 
-	public void setSteeringChangeListener(
-			SteeringChangeListener steeringChangeListener) {
-		Log.e("HALLÅ", "LYSSNARE SKAPAS");
-
-		this.steeringChangeListener = steeringChangeListener;
-
-	}
-	/*
-	 * public void steeringChanged() { if (this.steeringChangeListener != null)
-	 * { Log.e("HALLÅ", "Lyssnare reagerar 1"); if (steering != prevSteering) {
-	 * Log.e("HALLÅ", "Lyssnare reagerar 2");
-	 * this.steeringChangeListener.onSteeringChanged(steering); } } }
-	 */
-
+	
+	
 }
