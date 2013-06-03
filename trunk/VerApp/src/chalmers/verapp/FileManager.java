@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.FileObserver;
 import android.util.Log;
 /**
  * Sending files from folder to web server.
@@ -22,7 +23,9 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 			"/Android/data/com.chalmers.civinco/files/waiting/");	
 	public static final File FILES_SENT_DIR = new File(Environment.getExternalStorageDirectory() +
 			"/Android/data/com.chalmers.civinco/files/sent/");
-
+	
+	private FileObserver observer;
+	
 	/**
 	 * Check if sent files folder is created
 	 */
@@ -35,10 +38,18 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 	// http://stackoverflow.com/questions/7943620/error-while-trying-to-upload-file-from-android
 	@Override
 	protected Void doInBackground(Void...voids){	
-		File filesNotSent[] = FILES_WAITING_DIR.listFiles();
+			
+		
+		observer = new FileObserver(FileManager.FILES_WAITING_DIR.getPath()) { // set up a file observer to watch this directory on sd card
+			@Override
+			public void onEvent(int event, String file) {
+				if(event == FileObserver.CLOSE_WRITE){
+					//addToLog(event+" "+file);				
+					//checkItOut();
+					File filesNotSent[] = FILES_WAITING_DIR.listFiles();
 
-		int filesLeft = filesNotSent.length;	
-
+					int filesLeft = filesNotSent.length;
+		
 		while(filesLeft > 0){			
 			String extension = "NOT ZIP"; 		
 
@@ -123,6 +134,12 @@ public class FileManager extends AsyncTask<Void, Void, Void>{
 			}else
 				filesLeft--;						
 		}
+		
+				}
+			}
+		};
+		observer.startWatching();
+		
 		return null;
 	}	
 

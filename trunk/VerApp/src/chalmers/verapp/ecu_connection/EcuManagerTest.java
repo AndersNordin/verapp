@@ -2,6 +2,8 @@ package chalmers.verapp.ecu_connection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -180,20 +182,22 @@ public class EcuManagerTest {
 //	}
 
 private void startReadThread(){
-		
+	
 		mReadThread = new Thread() {
 			public void run() {
+				
 				try {
 					mLogger.WriteLine("Started Read Thread\n");
 					ArrayList<Byte> message = new ArrayList<Byte>();
 					ArrayList<Integer> shortMsg = new ArrayList<Integer>();
+					//long timestamp = 0;
 					byte lastByte = 0x00;
 					
 					
 					while (!this.isInterrupted()) {
 						
 						byte buffer = mReadQueue.take();
-						
+						long timestamp = System.currentTimeMillis();
 						message.add(buffer);
 						
 						if (lastByte == 0x44 && buffer == 0x53) {
@@ -218,9 +222,9 @@ private void startReadThread(){
 									}
 									shortMsg.add(val);
 								}
-								
-								mLogger.WriteLine(" " +shortMsg.toString() +"  10" +
-										"  11  12  13  14"+"  "+mSystemInfo.getLongitude()+"  "+mSystemInfo.getLatitude() +"  "+mSystemInfo.getWarning()+ "  10000\n");
+								timestamp++;
+								mLogger.WriteLine(" " +shortMsg.toString() +"  "+mSystemInfo.getLeftCamber() +"  "+mSystemInfo.getRightCamber()+"  "+
+										mSystemInfo.getLeftWheelSpeed()+"  "+ mSystemInfo.getRightWheelSpeed()+"  "+mSystemInfo.getSteering() +"  "+mSystemInfo.getAccelerometer()+"  0  0" +"  "+mSystemInfo.getLongitude()+"  "+mSystemInfo.getLatitude() +"  "+mSystemInfo.getWarning()+ "  " + timestamp +"\n");
 								}
 							shortMsg.clear();
 							message.clear();
